@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
             supabase: ['@supabase/supabase-js'],
             forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
             query: ['@tanstack/react-query'],
+            ui: ['radix-ui', 'cmdk', 'sonner', 'lucide-react'],
           },
         },
       },

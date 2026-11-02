@@ -6,10 +6,7 @@ import { LoginPage } from '@/features/auth/login-page'
 import { ResetPasswordPage } from '@/features/auth/reset-password-page'
 import { RedirectIfAuthenticated, RequireAuth } from '@/features/auth/route-guards'
 import { SignupPage } from '@/features/auth/signup-page'
-import {
-  BillingPage,
-  DashboardPage,
-} from '@/features/placeholders/pages'
+import { BillingPage } from '@/features/placeholders/pages'
 import { HomePage } from '@/features/public/home-page'
 import { LegalPlaceholderPage, NotFoundPage } from '@/features/public/simple-pages'
 
@@ -28,6 +25,7 @@ const gigs = () => import('@/features/gigs/gigs-page')
 const gigDetail = () => import('@/features/gigs/gig-detail')
 const clients = () => import('@/features/clients/clients-page')
 const clientDetail = () => import('@/features/clients/client-detail')
+const dashboard = () => import('@/features/dashboard/dashboard-page')
 const settings = () => import('@/features/settings/settings-page')
 
 // BrowserRouter-style routing. On GitHub Pages, deep links are served by 404.html
@@ -54,7 +52,7 @@ export const router = createBrowserRouter(
         {
           element: <AppShell />,
           children: [
-            { index: true, element: <DashboardPage /> },
+            { index: true, lazy: async () => ({ Component: (await dashboard()).DashboardPage }) },
             {
               path: 'tricks',
               lazy: async () => ({ Component: (await tricks()).TricksPage }),

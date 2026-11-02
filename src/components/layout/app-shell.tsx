@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router'
 import { Logo } from '@/components/common/logo'
 import { PracticeTimerWidget } from '@/features/practice/practice-timer-widget'
+import { CommandPalette } from '@/features/search/command-palette'
+import { setSearchOpen } from '@/features/search/search-store'
+import { Search } from 'lucide-react'
 import { useProfile } from '@/features/profile/api'
 import { useTheme, type Theme } from '@/hooks/use-theme'
 import { BottomTabs } from './bottom-tabs'
@@ -52,6 +55,14 @@ export function AppShell() {
             Magician <span className="text-gold">Helper</span>
           </span>
         </Link>
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          className="ml-auto rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          aria-label="Search"
+        >
+          <Search className="size-5" aria-hidden="true" />
+        </button>
       </header>
 
       <main
@@ -67,6 +78,7 @@ export function AppShell() {
       </main>
       <BottomTabs />
       <PracticeTimerWidget />
+      <CommandPalette />
     </div>
   )
 }

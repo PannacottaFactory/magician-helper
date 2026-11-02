@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Outlet } from 'react-router'
-import { Plus, Sparkles } from 'lucide-react'
+import { FileUp, Plus, Sparkles } from 'lucide-react'
 import { EmptyState } from '@/components/common/empty-state'
 import { ResultCount, SearchInput, Toolbar, ViewSwitcher, type ViewMode } from '@/components/common/list-toolbar'
 import { WriteButton } from '@/components/common/write-button'
@@ -13,6 +13,7 @@ import { useWithoutPending } from '@/hooks/use-undoable-delete'
 import { TRICK_CATEGORIES, TRICK_STATUSES, type TrickStatus } from '@/lib/constants'
 import { pluralize } from '@/lib/format'
 import { useTricks } from './api'
+import { ImportTricksDialog } from './import-dialog'
 import { TrickFormDialog } from './trick-form-dialog'
 import { TrickCards, TrickKanban, TrickTable, sortTricks, type Sort } from './trick-views'
 
@@ -26,6 +27,7 @@ export function TricksPage() {
   const [category, setCategory] = useState('all')
   const [tag, setTag] = useState('all')
   const [creating, setCreating] = useState<{ status?: TrickStatus } | null>(null)
+  const [importing, setImporting] = useState(false)
 
   const allTags = useMemo(
     () => [...new Set(tricks.flatMap((t) => t.tags))].sort((a, b) => a.localeCompare(b)),
@@ -61,9 +63,14 @@ export function TricksPage() {
             : 'Your repertoire library.'
         }
         actions={
-          <WriteButton onClick={() => setCreating({})}>
-            <Plus aria-hidden="true" /> New trick
-          </WriteButton>
+          <>
+            <WriteButton variant="outline" onClick={() => setImporting(true)}>
+              <FileUp aria-hidden="true" /> Import CSV
+            </WriteButton>
+            <WriteButton onClick={() => setCreating({})}>
+              <Plus aria-hidden="true" /> New trick
+            </WriteButton>
+          </>
         }
       />
 
@@ -75,9 +82,14 @@ export function TricksPage() {
           title="No tricks yet"
           description="Add the effects you perform or want to learn — with their secret, props, difficulty and progress."
           action={
-            <WriteButton onClick={() => setCreating({})}>
-              <Plus aria-hidden="true" /> Add your first trick
-            </WriteButton>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <WriteButton onClick={() => setCreating({})}>
+                <Plus aria-hidden="true" /> Add your first trick
+              </WriteButton>
+              <WriteButton variant="outline" onClick={() => setImporting(true)}>
+                <FileUp aria-hidden="true" /> Import from CSV
+              </WriteButton>
+            </div>
           }
         />
       ) : (
@@ -165,6 +177,7 @@ export function TricksPage() {
         onOpenChange={(o) => !o && setCreating(null)}
         defaultStatus={creating?.status}
       />
+      <ImportTricksDialog open={importing} onOpenChange={setImporting} />
       <Outlet />
     </>
   )

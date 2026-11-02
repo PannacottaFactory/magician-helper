@@ -916,6 +916,15 @@ export type Database = {
         Args: { p_ids: string[]; p_routine_id: string }
         Returns: undefined
       }
+      search_all: {
+        Args: { per_kind?: number; q: string }
+        Returns: {
+          id: string
+          kind: string
+          subtitle: string
+          title: string
+        }[]
+      }
       sync_gig_checklist: { Args: { p_gig_id: string }; Returns: undefined }
     }
     Enums: {

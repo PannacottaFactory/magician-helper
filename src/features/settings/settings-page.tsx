@@ -1,8 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, Monitor, Moon, Sun } from 'lucide-react'
+import { FileArchive, FileJson, Loader2, Monitor, Moon, Sun } from 'lucide-react'
+import { NumberInput } from '@/components/common/number-input'
+import { exportCsvZip, exportJson } from '@/lib/export'
+import { pluralize } from '@/lib/format'
 import { toast } from 'sonner'
 import { PageHeader } from '@/components/layout/page-header'
 import { Button } from '@/components/ui/button'
@@ -35,7 +38,9 @@ export function SettingsPage() {
       <div className="grid max-w-2xl gap-6">
         <ProfileCard />
         <CurrencyCard />
+        <PracticeCard />
         <ThemeCard />
+        <DataCard />
       </div>
     </>
   )
@@ -176,6 +181,80 @@ function CurrencyCard() {
             ))}
           </SelectContent>
         </Select>
+      </CardContent>
+    </Card>
+  )
+}
+
+function PracticeCard() {
+  const { data: profile } = useProfile()
+  const update = useUpdateProfile()
+  const [days, setDays] = useState<number | null>(null)
+  const value = days ?? profile?.stale_trick_days ?? 14
+
+  function save() {
+    if (!value || value < 1 || value > 365 || value === profile?.stale_trick_days) return
+    update.mutate(
+      { stale_trick_days: value },
+      {
+        onSuccess: () => toast.success('Practice reminder updated.'),
+        onError: () => toast.error('Could not save this setting.'),
+      },
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Practice reminders</CardTitle>
+        <CardDescription>The dashboard lists tricks you haven't practiced for this many days.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center gap-2">
+          <label htmlFor="stale-days" className="sr-only">
+            Days without practice
+          </label>
+          <NumberInput id="stale-days" min={1} max={365} className="w-24" value={value} onChange={setDays} onBlur={save} />
+          <span className="text-sm text-muted-foreground">days without practice</span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function DataCard() {
+  const [busy, setBusy] = useState<'json' | 'csv' | null>(null)
+
+  async function run(kind: 'json' | 'csv') {
+    setBusy(kind)
+    try {
+      const count = kind === 'json' ? await exportJson() : await exportCsvZip()
+      toast.success(`Export ready — ${pluralize(count, 'record')}.`)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Export failed.')
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Your data</CardTitle>
+        <CardDescription>
+          Download everything you've entered — tricks, routines, practice, gigs, clients, inventory and ideas. Available
+          at any time, even after your trial.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2 sm:flex-row">
+        <Button variant="outline" onClick={() => run('json')} disabled={busy !== null}>
+          {busy === 'json' ? <Loader2 className="animate-spin" aria-hidden="true" /> : <FileJson aria-hidden="true" />}
+          Export JSON
+        </Button>
+        <Button variant="outline" onClick={() => run('csv')} disabled={busy !== null}>
+          {busy === 'csv' ? <Loader2 className="animate-spin" aria-hidden="true" /> : <FileArchive aria-hidden="true" />}
+          Export CSV (zip)
+        </Button>
       </CardContent>
     </Card>
   )

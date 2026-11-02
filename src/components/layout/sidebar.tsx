@@ -1,4 +1,6 @@
 import { Link, NavLink } from 'react-router'
+import { Search } from 'lucide-react'
+import { setSearchOpen, shortcutLabel } from '@/features/search/search-store'
 import { Logo } from '@/components/common/logo'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
@@ -66,6 +68,19 @@ export function Sidebar() {
           Magician <span className="text-gold">Helper</span>
         </span>
       </Link>
+      <div className="px-2 pb-2 lg:px-3">
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          aria-label={`Search (${shortcutLabel})`}
+          title={`Search (${shortcutLabel})`}
+          className="flex w-full items-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent/40 px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-gold/40 hover:text-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none md:justify-center lg:justify-start"
+        >
+          <Search className="size-4 shrink-0" aria-hidden="true" />
+          <span className="hidden flex-1 text-left lg:inline">Search…</span>
+          <kbd className="hidden rounded border border-sidebar-border px-1.5 text-[10px] lg:inline">{shortcutLabel}</kbd>
+        </button>
+      </div>
       <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-2 lg:px-3">
         {mainNav.map((item) => (
           <SidebarLink key={item.to} item={item} />

@@ -31,13 +31,13 @@ The SQL files in `supabase/migrations/` create the tables, security rules (RLS) 
 ```bash
 npx supabase login                         # opens the browser once
 npx supabase link --project-ref <your-ref> # asks for the database password
-npx supabase db push                       # applies every migration not yet applied
+npx supabase db push --remote              # applies every migration not yet applied (--remote = your online project, not a local one)
 npm run db:types                           # regenerates src/types/database.ts from the real schema
 ```
 
 > Alternative without CLI: open **SQL Editor** in Supabase and run each file of `supabase/migrations/` in order. The CLI is recommended because it remembers which migrations were applied.
 
-Run `npx supabase db push` again every time a new phase adds a migration.
+Run `npx supabase db push --remote` again every time a new phase adds a migration.
 
 ### 3. Configure authentication
 

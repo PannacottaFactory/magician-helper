@@ -32,7 +32,7 @@ Before every commit: `npm run build`, `npm run lint`, `npm run test:sql` must pa
 - `src/components/common/` — shared app components (EmptyState, Logo, loaders…)
 - `src/lib/` — supabase client, env, query client, utils
 - `src/hooks/` — theme, etc.
-- `supabase/migrations/` — SQL migrations, one per phase, named `YYYYMMDDHHMMSS_name.sql`
+- `supabase/migrations/` — SQL migrations (apply with `npx supabase db push --remote`; CLI v3 targets local by default), one per phase, named `YYYYMMDDHHMMSS_name.sql`
 - `supabase/tests/` — SQL tests (RLS, triggers, functions) run by `npm run test:sql`
 - `supabase/functions/` — Edge Functions (phase 6)
 

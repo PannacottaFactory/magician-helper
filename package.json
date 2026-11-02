@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc -b",
-    "db:types": "supabase gen types typescript --linked --schema public > src/types/database.ts",
+    "db:types": "supabase gen types --lang=typescript --remote --schema public > src/types/database.ts",
     "test:sql": "node scripts/sql-test/run.mjs"
   },
   "dependencies": {

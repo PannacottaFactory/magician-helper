@@ -31,7 +31,7 @@ function fetchRoutine(id: string) {
     supabase
       .from('routines')
       .select(
-        '*, routine_tricks(id, position, transition_notes, trick:tricks(id, name, status, duration_min, difficulty, other_props)), practice_logs(id, practiced_on, title, time_spent_min, self_rating)',
+        '*, routine_tricks(id, position, transition_notes, trick:tricks(id, name, status, duration_min, difficulty, other_props)), practice_logs(id, practiced_on, title, time_spent_min, self_rating), gig_routines(id, gig:gigs(id, title, starts_at, payment_status))',
       )
       .eq('id', id)
       .order('position', { referencedTable: 'routine_tricks' })

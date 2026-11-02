@@ -66,6 +66,8 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - Server data only through TanStack Query hooks in `features/*/api.ts`; throw Supabase errors, show them with `sonner` toasts.
 - Forms: `useForm<Values>({ resolver: zodResolver(schema) })` + shadcn `Form*` components (they handle labels/ARIA).
 - Tags get a stable color from `tagColor()` (`src/lib/colors.ts`); use `TagBadge`/`TagList`, `CategoryBadge`, `AudienceBadge`.
+- Never call `Date.now()` / `new Date()` for "now" during render (React compiler lint error): use `useNow()` from `src/hooks/use-now.ts`.
+- Gig checklist: a DB trigger on `gig_routines` calls `sync_gig_checklist()`; the UI also offers a Refresh button (routines may change after linking). Floating widgets must carry `data-floating-widget` so clicking them does not close sheets/dialogs.
 - The practice timer lives in `features/practice/timer-store.ts` (localStorage, survives navigation/reload); the floating widget is rendered by `AppShell`.
 - Colors only through theme tokens (`bg-background`, `text-muted-foreground`, `text-gold`, `border-gold/30`…) defined in `src/styles/globals.css`. Design = **matte black with light gold touches**; gold is an accent, not a fill (use it for active states, icons, highlights, primary buttons).
 - Headings use `font-display` (Cormorant Garamond); body uses Inter.
@@ -81,7 +83,7 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - [x] Phase 1 — setup, auth, responsive layout, GitHub Pages deploy
 - [x] Phase 2 — Tricks + Inventory + Ideas
 - [x] Phase 3 — Routines + Practice Log (+ built-in prop catalog, colored tags)
-- [ ] Phase 4 — Clients + Gigs + calendar + prep checklist
+- [x] Phase 4 — Clients + Gigs + calendar + prep checklist
 - [ ] Phase 5 — Dashboard, global search, export/import
 - [ ] Phase 6 — Trial, Stripe, read-only mode, Billing page
 - [ ] Phase 7 — Landing page, PWA, polish, accessibility

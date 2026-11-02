@@ -13,6 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '@/features/auth/auth-provider'
 import { useProfile, useUpdateProfile } from '@/features/profile/api'
 import { useTheme, type Theme } from '@/hooks/use-theme'
+import { CURRENCIES } from '@/lib/constants'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 
 const profileSchema = z.object({
@@ -32,6 +34,7 @@ export function SettingsPage() {
       <PageHeader title="Settings" description="Your profile and preferences." />
       <div className="grid max-w-2xl gap-6">
         <ProfileCard />
+        <CurrencyCard />
         <ThemeCard />
       </div>
     </>
@@ -135,6 +138,44 @@ function ThemeCard() {
             </button>
           ))}
         </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function CurrencyCard() {
+  const { data: profile } = useProfile()
+  const update = useUpdateProfile()
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Currency</CardTitle>
+        <CardDescription>Default currency for new gigs and inventory costs.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Select
+          value={profile?.currency ?? 'EUR'}
+          onValueChange={(currency) =>
+            update.mutate(
+              { currency },
+              {
+                onSuccess: () => toast.success(`Default currency set to ${currency}.`),
+                onError: () => toast.error('Could not save your currency.'),
+              },
+            )
+          }
+        >
+          <SelectTrigger className="w-full sm:w-72" aria-label="Default currency">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CURRENCIES.map((c) => (
+              <SelectItem key={c.value} value={c.value}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </CardContent>
     </Card>
   )

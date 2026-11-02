@@ -8,9 +8,7 @@ import { RedirectIfAuthenticated, RequireAuth } from '@/features/auth/route-guar
 import { SignupPage } from '@/features/auth/signup-page'
 import {
   BillingPage,
-  ClientsPage,
   DashboardPage,
-  GigsPage,
 } from '@/features/placeholders/pages'
 import { HomePage } from '@/features/public/home-page'
 import { LegalPlaceholderPage, NotFoundPage } from '@/features/public/simple-pages'
@@ -26,6 +24,10 @@ const ideaDetail = () => import('@/features/ideas/idea-detail')
 const routines = () => import('@/features/routines/routines-page')
 const routineDetail = () => import('@/features/routines/routine-detail')
 const practice = () => import('@/features/practice/practice-page')
+const gigs = () => import('@/features/gigs/gigs-page')
+const gigDetail = () => import('@/features/gigs/gig-detail')
+const clients = () => import('@/features/clients/clients-page')
+const clientDetail = () => import('@/features/clients/client-detail')
 const settings = () => import('@/features/settings/settings-page')
 
 // BrowserRouter-style routing. On GitHub Pages, deep links are served by 404.html
@@ -64,8 +66,16 @@ export const router = createBrowserRouter(
               children: [{ path: ':routineId', lazy: async () => ({ Component: (await routineDetail()).RoutineDetail }) }],
             },
             { path: 'practice', lazy: async () => ({ Component: (await practice()).PracticePage }) },
-            { path: 'gigs', element: <GigsPage /> },
-            { path: 'clients', element: <ClientsPage /> },
+            {
+              path: 'gigs',
+              lazy: async () => ({ Component: (await gigs()).GigsPage }),
+              children: [{ path: ':gigId', lazy: async () => ({ Component: (await gigDetail()).GigDetailPanel }) }],
+            },
+            {
+              path: 'clients',
+              lazy: async () => ({ Component: (await clients()).ClientsPage }),
+              children: [{ path: ':clientId', lazy: async () => ({ Component: (await clientDetail()).ClientDetail }) }],
+            },
             {
               path: 'inventory',
               lazy: async () => ({ Component: (await inventory()).InventoryPage }),

@@ -90,3 +90,33 @@ export function htmlToText(html: string | null | undefined) {
   doc.querySelectorAll('p, li, h1, h2, h3, blockquote, br').forEach((el) => el.append(' '))
   return (doc.body.textContent ?? '').replace(/\s+/g, ' ').trim()
 }
+
+/** YYYY-MM-DD of a Date in local time. */
+export function toISODay(d: Date) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+/** "HH:mm" of a timestamp in local time. */
+export function toTimeInput(value: string | Date) {
+  const d = new Date(value)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+/** Local date + "HH:mm" → ISO timestamp. */
+export function combineDateTime(day: string, time: string) {
+  const [h, m] = time.split(':').map(Number)
+  const d = parseDay(day)
+  d.setHours(h || 0, m || 0, 0, 0)
+  return d.toISOString()
+}
+
+export function formatTime(value: string | Date | null | undefined) {
+  if (!value) return ''
+  return new Intl.DateTimeFormat(LOCALE, { hour: '2-digit', minute: '2-digit' }).format(new Date(value))
+}
+
+/** "Sat 14 Dec 2026 · 20:00–22:00" */
+export function formatGigWhen(startsAt: string, endsAt?: string | null) {
+  const date = formatDate(startsAt, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+  return `${date} · ${formatTime(startsAt)}${endsAt ? `–${formatTime(endsAt)}` : ''}`
+}

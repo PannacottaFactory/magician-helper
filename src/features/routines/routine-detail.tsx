@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, Clock, Gauge, Pencil, Sparkles, Timer, Trash2 } from 'lucide-react'
+import { AlertTriangle, CalendarDays, Clock, Gauge, Pencil, Sparkles, Timer, Trash2 } from 'lucide-react'
 import { DetailPanel, DetailSection } from '@/components/common/detail-panel'
 import { StarRating } from '@/components/common/star-rating'
 import { StockBadge } from '@/components/common/status-badge'
@@ -11,8 +11,10 @@ import { Button } from '@/components/ui/button'
 import { ItemVisual } from '@/features/inventory/item-visual'
 import { PracticeFormDialog } from '@/features/practice/practice-form-dialog'
 import { practiceTimer } from '@/features/practice/timer-store'
+import { useNow } from '@/hooks/use-now'
 import { useUndoableDelete } from '@/hooks/use-undoable-delete'
-import { formatDayRelative, formatDuration, pluralize } from '@/lib/format'
+import { formatDate, formatDayRelative, formatDuration, pluralize } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import { deleteRoutine, routineKeys, useRoutine, useRoutineProps } from './api'
 import { RoutineFormDialog } from './routine-form-dialog'
 import { RoutineStatusBadge } from './routines-page'
@@ -37,6 +39,7 @@ export function RoutineDetail() {
   const { data: props = [] } = useRoutineProps(routineId)
   const [editing, setEditing] = useState(false)
   const [logging, setLogging] = useState(false)
+  const now = useNow()
   const close = () => navigate('/app/routines')
   const undoableDelete = useUndoableDelete({
     onSettled: () => void queryClient.invalidateQueries({ queryKey: routineKeys.all }),
@@ -60,6 +63,9 @@ export function RoutineDetail() {
       tricks.flatMap((rt) => rt.trick?.other_props?.split('\n').map((l) => l.trim()).filter(Boolean) ?? []),
     ),
   ]
+  const gigs = (routine?.gig_routines ?? [])
+    .flatMap((gr) => (gr.gig ? [gr.gig] : []))
+    .sort((a, b) => b.starts_at.localeCompare(a.starts_at))
   const missing = props.filter((p) => (p.quantity ?? 0) < (p.quantity_needed ?? 1))
 
   return (
@@ -169,6 +175,32 @@ export function RoutineDetail() {
                   </li>
                 ))}
               </ul>
+            )}
+          </DetailSection>
+
+          <DetailSection title="Performed at">
+            {gigs.length ? (
+              <ul className="divide-y rounded-lg border">
+                {gigs.map((gig) => {
+                  const past = new Date(gig.starts_at).getTime() < now
+                  return (
+                    <li key={gig.id}>
+                      <Link
+                        to={`/app/gigs/${gig.id}`}
+                        className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                      >
+                        <CalendarDays className={cn('size-4 shrink-0', past ? 'text-muted-foreground' : 'text-gold')} aria-hidden="true" />
+                        <span className="min-w-0 flex-1 truncate">{gig.title}</span>
+                        <span className={cn('text-xs tabular-nums', past ? 'text-muted-foreground' : 'text-gold')}>
+                          {formatDate(gig.starts_at)}
+                        </span>
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">Not booked for any gig yet.</p>
             )}
           </DetailSection>
 

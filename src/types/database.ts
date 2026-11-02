@@ -14,6 +14,244 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          company: string | null
+          contact_link: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          contact_link?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          company?: string | null
+          contact_link?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gig_checklist_items: {
+        Row: {
+          created_at: string
+          gig_id: string
+          id: string
+          is_checked: boolean
+          item_id: string | null
+          label: string
+          position: number
+          quantity_needed: number
+          source: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          gig_id: string
+          id?: string
+          is_checked?: boolean
+          item_id?: string | null
+          label: string
+          position?: number
+          quantity_needed?: number
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          gig_id?: string
+          id?: string
+          is_checked?: boolean
+          item_id?: string | null
+          label?: string
+          position?: number
+          quantity_needed?: number
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gig_checklist_items_gig_id_user_id_fkey"
+            columns: ["gig_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "gigs"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gig_checklist_items_gig_id_user_id_fkey"
+            columns: ["gig_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "gigs_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gig_checklist_items_item_id_user_id_fkey"
+            columns: ["item_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gig_checklist_items_item_id_user_id_fkey"
+            columns: ["item_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      gig_routines: {
+        Row: {
+          created_at: string
+          gig_id: string
+          id: string
+          position: number
+          routine_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          gig_id: string
+          id?: string
+          position?: number
+          routine_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          gig_id?: string
+          id?: string
+          position?: number
+          routine_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gig_routines_gig_id_user_id_fkey"
+            columns: ["gig_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "gigs"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gig_routines_gig_id_user_id_fkey"
+            columns: ["gig_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "gigs_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gig_routines_routine_id_user_id_fkey"
+            columns: ["routine_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gig_routines_routine_id_user_id_fkey"
+            columns: ["routine_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "routines_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      gigs: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          currency: string
+          deposit_amount: number | null
+          ends_at: string | null
+          event_type: string | null
+          fee: number | null
+          id: string
+          location: string | null
+          notes: string | null
+          payment_status: string
+          starts_at: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          currency?: string
+          deposit_amount?: number | null
+          ends_at?: string | null
+          event_type?: string | null
+          fee?: number | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          payment_status?: string
+          starts_at: string
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          currency?: string
+          deposit_amount?: number | null
+          ends_at?: string | null
+          event_type?: string | null
+          fee?: number | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          payment_status?: string
+          starts_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gigs_client_id_user_id_fkey"
+            columns: ["client_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gigs_client_id_user_id_fkey"
+            columns: ["client_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "clients_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
       ideas: {
         Row: {
           content: string | null
@@ -502,6 +740,66 @@ export type Database = {
       }
     }
     Views: {
+      clients_overview: {
+        Row: {
+          company: string | null
+          contact_link: string | null
+          created_at: string | null
+          email: string | null
+          gig_count: number | null
+          id: string | null
+          last_gig_at: string | null
+          name: string | null
+          next_gig_at: string | null
+          notes: string | null
+          phone: string | null
+          total_fees: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      gigs_overview: {
+        Row: {
+          amount_received: number | null
+          checklist_done: number | null
+          checklist_total: number | null
+          client_id: string | null
+          client_name: string | null
+          created_at: string | null
+          currency: string | null
+          deposit_amount: number | null
+          ends_at: string | null
+          event_type: string | null
+          fee: number | null
+          has_stock_alert: boolean | null
+          id: string | null
+          location: string | null
+          notes: string | null
+          payment_status: string | null
+          routine_count: number | null
+          starts_at: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gigs_client_id_user_id_fkey"
+            columns: ["client_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "gigs_client_id_user_id_fkey"
+            columns: ["client_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "clients_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
       inventory_overview: {
         Row: {
           buy_link: string | null
@@ -618,6 +916,7 @@ export type Database = {
         Args: { p_ids: string[]; p_routine_id: string }
         Returns: undefined
       }
+      sync_gig_checklist: { Args: { p_gig_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

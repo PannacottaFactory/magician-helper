@@ -82,3 +82,39 @@ export const PRACTICE_STATUSES = [
 export type PracticeStatus = (typeof PRACTICE_STATUSES)[number]['value']
 
 export const RATING_LABELS = ['', 'Rough', 'Shaky', 'Decent', 'Solid', 'Nailed it'] as const
+
+export const PAYMENT_STATUSES = [
+  { value: 'pending', label: 'Pending', badge: 'border-border bg-muted text-muted-foreground', dot: 'bg-muted-foreground' },
+  { value: 'deposit_paid', label: 'Deposit paid', badge: 'border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300', dot: 'bg-sky-400' },
+  { value: 'invoiced', label: 'Invoiced', badge: 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300', dot: 'bg-amber-400' },
+  { value: 'fully_paid', label: 'Fully paid', badge: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300', dot: 'bg-emerald-400' },
+] as const
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number]['value']
+
+export const EVENT_TYPES = [
+  'Birthday party',
+  'Corporate event',
+  'Wedding',
+  'Private party',
+  'Festival',
+  'Restaurant / bar',
+  'Trade show',
+  'School / library',
+  'Street show',
+  'Theater show',
+]
+
+export const CURRENCIES = [
+  { value: 'EUR', label: 'Euro (€)' },
+  { value: 'USD', label: 'US dollar ($)' },
+  { value: 'GBP', label: 'British pound (£)' },
+  { value: 'CHF', label: 'Swiss franc (CHF)' },
+  { value: 'CAD', label: 'Canadian dollar (CA$)' },
+  { value: 'AUD', label: 'Australian dollar (A$)' },
+  { value: 'JPY', label: 'Japanese yen (¥)' },
+  { value: 'SEK', label: 'Swedish krona (kr)' },
+  { value: 'NOK', label: 'Norwegian krone (kr)' },
+  { value: 'DKK', label: 'Danish krone (kr)' },
+  { value: 'PLN', label: 'Polish złoty (zł)' },
+  { value: 'BRL', label: 'Brazilian real (R$)' },
+] as const

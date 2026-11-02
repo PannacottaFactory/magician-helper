@@ -20,6 +20,7 @@ import {
   useUploadFiles,
   type InventoryFile,
 } from './api'
+import { CatalogIllustration } from './catalog/illustrations'
 import { InventoryFormDialog } from './inventory-form-dialog'
 import { QuantityStepper } from './quantity-stepper'
 
@@ -85,7 +86,7 @@ export function InventoryDetail() {
             </div>
           </DetailSection>
 
-          <PhotosSection itemId={item.id} photos={photos} />
+          <PhotosSection itemId={item.id} photos={photos} catalogKey={item.catalog_key} />
           <FilesSection itemId={item.id} files={files} />
 
           <DetailSection title="Used in tricks">
@@ -181,7 +182,15 @@ function UploadButton({ itemId, accept, label }: { itemId: string; accept?: stri
   )
 }
 
-function PhotosSection({ itemId, photos }: { itemId: string; photos: InventoryFile[] }) {
+function PhotosSection({
+  itemId,
+  photos,
+  catalogKey,
+}: {
+  itemId: string
+  photos: InventoryFile[]
+  catalogKey: string | null
+}) {
   const urls = useSignedUrls(photos.map((p) => p.storage_path))
   const deleteFile = useDeleteFile()
   const { canWrite } = useAccess()
@@ -214,6 +223,11 @@ function PhotosSection({ itemId, photos }: { itemId: string; photos: InventoryFi
             )
           })}
         </div>
+      ) : catalogKey ? (
+        <figure className="max-w-xs">
+          <CatalogIllustration catalogKey={catalogKey} className="aspect-[4/3] w-full overflow-hidden rounded-lg border" />
+          <figcaption className="mt-1.5 text-xs text-muted-foreground">Catalog illustration — add your own photo anytime.</figcaption>
+        </figure>
       ) : (
         <p className="text-sm text-muted-foreground">No photos yet.</p>
       )}

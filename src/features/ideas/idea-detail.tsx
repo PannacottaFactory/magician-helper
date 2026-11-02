@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { DetailPanel, DetailSection } from '@/components/common/detail-panel'
 import { RichTextView } from '@/components/common/rich-text'
 import { WriteButton } from '@/components/common/write-button'
-import { Badge } from '@/components/ui/badge'
+import { TagList } from '@/components/common/tag-badge'
 import { useUndoableDelete } from '@/hooks/use-undoable-delete'
 import { dbErrorMessage } from '@/lib/db'
 import { formatDate } from '@/lib/format'
@@ -102,13 +102,7 @@ export function IdeaDetail() {
           </DetailSection>
           {idea.tags.length > 0 && (
             <DetailSection title="Tags">
-              <div className="flex flex-wrap gap-1.5">
-                {idea.tags.map((t) => (
-                  <Badge key={t} variant="secondary" className="font-normal">
-                    {t}
-                  </Badge>
-                ))}
-              </div>
+              <TagList tags={idea.tags} />
             </DetailSection>
           )}
           <IdeaFormDialog open={editing} onOpenChange={setEditing} idea={idea} />

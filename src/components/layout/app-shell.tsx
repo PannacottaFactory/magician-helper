@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router'
 import { Logo } from '@/components/common/logo'
+import { PracticeTimerWidget } from '@/features/practice/practice-timer-widget'
 import { useProfile } from '@/features/profile/api'
 import { useTheme, type Theme } from '@/hooks/use-theme'
 import { BottomTabs } from './bottom-tabs'
@@ -65,6 +66,7 @@ export function AppShell() {
         </div>
       </main>
       <BottomTabs />
+      <PracticeTimerWidget />
     </div>
   )
 }

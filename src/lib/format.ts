@@ -16,6 +16,33 @@ export function formatDate(value: string | Date | null | undefined, options?: In
   )
 }
 
+/** Today as YYYY-MM-DD in the user's time zone. */
+export function todayISO() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+/** Parses a YYYY-MM-DD date as a local date (not UTC midnight). */
+export function parseDay(value: string) {
+  const [y, m, d] = value.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+export function formatDay(value: string | null | undefined, options?: Intl.DateTimeFormatOptions) {
+  if (!value) return '—'
+  return formatDate(parseDay(value), options)
+}
+
+/** 'today', 'yesterday', '3 days ago' for a YYYY-MM-DD date. */
+export function formatDayRelative(value: string | null | undefined) {
+  if (!value) return 'never'
+  const days = Math.round((parseDay(todayISO()).getTime() - parseDay(value).getTime()) / 86_400_000)
+  if (days === 0) return 'today'
+  if (days === 1) return 'yesterday'
+  if (days < 30) return `${days} days ago`
+  return formatRelative(parseDay(value))
+}
+
 export function formatDuration(minutes: number | null | undefined) {
   if (minutes === null || minutes === undefined) return '—'
   if (minutes < 60) return `${minutes} min`

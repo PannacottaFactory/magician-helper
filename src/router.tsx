@@ -11,8 +11,6 @@ import {
   ClientsPage,
   DashboardPage,
   GigsPage,
-  PracticePage,
-  RoutinesPage,
 } from '@/features/placeholders/pages'
 import { HomePage } from '@/features/public/home-page'
 import { LegalPlaceholderPage, NotFoundPage } from '@/features/public/simple-pages'
@@ -25,6 +23,9 @@ const inventory = () => import('@/features/inventory/inventory-page')
 const inventoryDetail = () => import('@/features/inventory/inventory-detail')
 const ideas = () => import('@/features/ideas/ideas-page')
 const ideaDetail = () => import('@/features/ideas/idea-detail')
+const routines = () => import('@/features/routines/routines-page')
+const routineDetail = () => import('@/features/routines/routine-detail')
+const practice = () => import('@/features/practice/practice-page')
 const settings = () => import('@/features/settings/settings-page')
 
 // BrowserRouter-style routing. On GitHub Pages, deep links are served by 404.html
@@ -57,8 +58,12 @@ export const router = createBrowserRouter(
               lazy: async () => ({ Component: (await tricks()).TricksPage }),
               children: [{ path: ':trickId', lazy: async () => ({ Component: (await trickDetail()).TrickDetail }) }],
             },
-            { path: 'routines', element: <RoutinesPage /> },
-            { path: 'practice', element: <PracticePage /> },
+            {
+              path: 'routines',
+              lazy: async () => ({ Component: (await routines()).RoutinesPage }),
+              children: [{ path: ':routineId', lazy: async () => ({ Component: (await routineDetail()).RoutineDetail }) }],
+            },
+            { path: 'practice', lazy: async () => ({ Component: (await practice()).PracticePage }) },
             { path: 'gigs', element: <GigsPage /> },
             { path: 'clients', element: <ClientsPage /> },
             {

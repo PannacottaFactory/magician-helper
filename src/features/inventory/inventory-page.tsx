@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, Outlet, useNavigate } from 'react-router'
-import { ImageOff, Package, Plus } from 'lucide-react'
+import { BookOpen, Package, Plus } from 'lucide-react'
 import { EmptyState } from '@/components/common/empty-state'
 import { ResultCount, SearchInput, Toolbar, ViewSwitcher, type ViewMode } from '@/components/common/list-toolbar'
 import { StockBadge } from '@/components/common/status-badge'
@@ -16,7 +16,9 @@ import { useWithoutPending } from '@/hooks/use-undoable-delete'
 import { STOCK_STATUSES } from '@/lib/constants'
 import { formatCurrency, pluralize } from '@/lib/format'
 import { useInventory, useInventoryThumbs, type InventoryRow } from './api'
+import { CatalogDialog } from './catalog/catalog-dialog'
 import { InventoryFormDialog } from './inventory-form-dialog'
+import { ItemVisual } from './item-visual'
 import { QuantityStepper } from './quantity-stepper'
 
 export function InventoryPage() {
@@ -26,6 +28,7 @@ export function InventoryPage() {
   const [stock, setStock] = useState('all')
   const [view, setView] = useLocalState<ViewMode>('inventory-view', 'table')
   const [creating, setCreating] = useState(false)
+  const [catalogOpen, setCatalogOpen] = useState(false)
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -49,9 +52,14 @@ export function InventoryPage() {
             : 'Every prop, with stock alerts.'
         }
         actions={
-          <WriteButton onClick={() => setCreating(true)}>
-            <Plus aria-hidden="true" /> New item
-          </WriteButton>
+          <>
+            <WriteButton variant="outline" onClick={() => setCatalogOpen(true)}>
+              <BookOpen aria-hidden="true" /> Add from catalog
+            </WriteButton>
+            <WriteButton onClick={() => setCreating(true)}>
+              <Plus aria-hidden="true" /> New item
+            </WriteButton>
+          </>
         }
       />
 
@@ -61,11 +69,16 @@ export function InventoryPage() {
         <EmptyState
           icon={Package}
           title="Your prop case is empty"
-          description="Track quantities, photos and where to rebuy each prop and gimmick. Link them to tricks to get prep checklists for your gigs."
+          description="Track quantities, photos and where to rebuy each prop and gimmick. Start from our catalog of classic props or add your own."
           action={
-            <WriteButton onClick={() => setCreating(true)}>
-              <Plus aria-hidden="true" /> Add your first item
-            </WriteButton>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <WriteButton onClick={() => setCatalogOpen(true)}>
+                <BookOpen aria-hidden="true" /> Browse classic props
+              </WriteButton>
+              <WriteButton variant="outline" onClick={() => setCreating(true)}>
+                <Plus aria-hidden="true" /> Add my own item
+              </WriteButton>
+            </div>
           }
         />
       ) : (
@@ -101,6 +114,7 @@ export function InventoryPage() {
       )}
 
       <InventoryFormDialog open={creating} onOpenChange={setCreating} />
+      <CatalogDialog open={catalogOpen} onOpenChange={setCatalogOpen} />
       <Outlet />
     </>
   )
@@ -108,6 +122,7 @@ export function InventoryPage() {
 
 function InventoryTable({ items }: { items: InventoryRow[] }) {
   const navigate = useNavigate()
+  const thumbs = useInventoryThumbs()
   const { data: profile } = useProfile()
   return (
     <div className="rounded-xl border">
@@ -125,13 +140,20 @@ function InventoryTable({ items }: { items: InventoryRow[] }) {
           {items.map((item) => (
             <TableRow key={item.id} className="cursor-pointer" onClick={() => navigate(item.id!)}>
               <TableCell className="font-medium">
-                <Link
-                  to={item.id!}
-                  onClick={(e) => e.stopPropagation()}
-                  className="rounded hover:text-gold focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-                >
-                  {item.item_name}
-                </Link>
+                <div className="flex items-center gap-3">
+                  <ItemVisual
+                    photoUrl={thumbs.get(item.id!)}
+                    catalogKey={item.catalog_key}
+                    className="h-9 w-12 shrink-0 overflow-hidden rounded-md"
+                  />
+                  <Link
+                    to={item.id!}
+                    onClick={(e) => e.stopPropagation()}
+                    className="rounded hover:text-gold focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  >
+                    {item.item_name}
+                  </Link>
+                </div>
               </TableCell>
               <TableCell>
                 <QuantityStepper id={item.id!} name={item.item_name ?? ''} quantity={item.quantity ?? 0} />
@@ -161,13 +183,7 @@ function InventoryCards({ items }: { items: InventoryRow[] }) {
         const thumb = thumbs.get(item.id!)
         return (
           <Card key={item.id} className="group relative gap-0 overflow-hidden py-0 transition-colors hover:border-gold/40">
-            <div className="flex aspect-[4/3] items-center justify-center bg-muted">
-              {thumb ? (
-                <img src={thumb} alt="" className="size-full object-cover" loading="lazy" />
-              ) : (
-                <ImageOff className="size-6 text-muted-foreground/50" aria-hidden="true" />
-              )}
-            </div>
+            <ItemVisual photoUrl={thumb} catalogKey={item.catalog_key} className="aspect-[4/3] w-full" />
             <div className="space-y-2 p-3">
               <Link
                 to={item.id!}

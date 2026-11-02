@@ -199,3 +199,13 @@ export function useInventoryThumbs() {
   })
   return result
 }
+
+/** Adds catalog props to the inventory in one request. */
+export function useAddCatalogItems() {
+  const invalidate = useInvalidateInventory()
+  return useMutation({
+    mutationFn: (items: TablesInsert<'inventory_items'>[]) =>
+      unwrap(supabase.from('inventory_items').insert(items).select()),
+    onSettled: invalidate,
+  })
+}

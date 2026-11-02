@@ -48,7 +48,9 @@ End-to-end API tests against the real project live in `scripts/e2e/` (create a t
 - Enum-like values: `text` + `CHECK`, stored in `snake_case` (`needs_polish`); English labels live in the frontend.
 - Computed fields: generated columns or `security_invoker` views; multi-row operations as SQL functions (`security invoker`, `set search_path = ''`).
 - `profiles` billing columns are only writable by the service role (column-level grants).
-- Never put seed/sample data in migrations — users start with an empty app.
+- Never put seed/sample data in migrations — users start with an empty app. Classic props are offered through the built-in catalog (`src/features/inventory/catalog/`: data + SVG illustrations); added items keep `catalog_key` to show the illustration when there is no photo.
+- Bulk inserts with supabase-js: every row must have the same keys — a missing key becomes NULL (not the column default).
+- Views expand `t.*` at creation: after adding a column to a table, drop and recreate views that select `*` from it.
 - After a migration, regenerate types (`npm run db:types`) and add tests in `supabase/tests/`.
 
 ### Read-only mode
@@ -63,6 +65,8 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - Import with the `@/` alias. Components in PascalCase, files in kebab-case.
 - Server data only through TanStack Query hooks in `features/*/api.ts`; throw Supabase errors, show them with `sonner` toasts.
 - Forms: `useForm<Values>({ resolver: zodResolver(schema) })` + shadcn `Form*` components (they handle labels/ARIA).
+- Tags get a stable color from `tagColor()` (`src/lib/colors.ts`); use `TagBadge`/`TagList`, `CategoryBadge`, `AudienceBadge`.
+- The practice timer lives in `features/practice/timer-store.ts` (localStorage, survives navigation/reload); the floating widget is rendered by `AppShell`.
 - Colors only through theme tokens (`bg-background`, `text-muted-foreground`, `text-gold`, `border-gold/30`…) defined in `src/styles/globals.css`. Design = **matte black with light gold touches**; gold is an accent, not a fill (use it for active states, icons, highlights, primary buttons).
 - Headings use `font-display` (Cormorant Garamond); body uses Inter.
 - Accessibility: AA contrast, every interactive element keyboard-reachable with visible focus ring, icon-only buttons need `aria-label`, decorative icons `aria-hidden`.
@@ -76,7 +80,7 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 
 - [x] Phase 1 — setup, auth, responsive layout, GitHub Pages deploy
 - [x] Phase 2 — Tricks + Inventory + Ideas
-- [ ] Phase 3 — Routines + Practice Log
+- [x] Phase 3 — Routines + Practice Log (+ built-in prop catalog, colored tags)
 - [ ] Phase 4 — Clients + Gigs + calendar + prep checklist
 - [ ] Phase 5 — Dashboard, global search, export/import
 - [ ] Phase 6 — Trial, Stripe, read-only mode, Billing page

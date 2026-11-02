@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link, Outlet } from 'react-router'
 import { Lightbulb, Plus, Sparkles } from 'lucide-react'
 import { EmptyState } from '@/components/common/empty-state'
+import { TagBadge } from '@/components/common/tag-badge'
 import { ResultCount, SearchInput, Toolbar } from '@/components/common/list-toolbar'
 import { WriteButton } from '@/components/common/write-button'
 import { PageHeader } from '@/components/layout/page-header'
@@ -99,9 +100,7 @@ export function IdeasPage() {
                       </Badge>
                     )}
                     {idea.tags.map((t) => (
-                      <Badge key={t} variant="secondary" className="font-normal">
-                        {t}
-                      </Badge>
+                      <TagBadge key={t} tag={t} />
                     ))}
                     <span className="ml-auto text-xs text-muted-foreground">{formatRelative(idea.updated_at)}</span>
                   </div>

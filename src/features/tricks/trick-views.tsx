@@ -16,32 +16,38 @@ import {
 } from '@dnd-kit/core'
 import { toast } from 'sonner'
 import { StarRating } from '@/components/common/star-rating'
+import { CategoryBadge, TagList } from '@/components/common/tag-badge'
 import { TrickStatusBadge } from '@/components/common/status-badge'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useAccess } from '@/features/profile/api'
-import { TRICK_CATEGORIES, TRICK_STATUSES, labelOf, type TrickStatus } from '@/lib/constants'
+import { TRICK_STATUSES, labelOf, type TrickStatus } from '@/lib/constants'
 import { dbErrorMessage } from '@/lib/db'
-import { formatDuration, formatRelative } from '@/lib/format'
+import { formatDayRelative, formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { useUpdateTrickStatus, type Trick } from './api'
+import { useUpdateTrickStatus, type TrickRow } from './api'
 
 /* ------------------------------------------------------------------ Table */
 
-export type SortKey = 'name' | 'status' | 'difficulty' | 'duration_min' | 'updated_at'
+export type SortKey = 'name' | 'status' | 'difficulty' | 'duration_min' | 'updated_at' | 'last_practiced'
 export type Sort = { key: SortKey; dir: 'asc' | 'desc' }
 
 const STATUS_ORDER = Object.fromEntries(TRICK_STATUSES.map((s, i) => [s.value, i]))
 
-export function sortTricks(tricks: Trick[], { key, dir }: Sort) {
+export function sortTricks(tricks: TrickRow[], { key, dir }: Sort) {
   const factor = dir === 'asc' ? 1 : -1
   return [...tricks].sort((a, b) => {
     let diff = 0
     if (key === 'name') diff = a.name.localeCompare(b.name)
     else if (key === 'status') diff = STATUS_ORDER[a.status] - STATUS_ORDER[b.status]
     else if (key === 'updated_at') diff = a.updated_at.localeCompare(b.updated_at)
+    else if (key === 'last_practiced') {
+      if (!a.last_practiced && !b.last_practiced) diff = 0
+      else if (!a.last_practiced) return 1
+      else if (!b.last_practiced) return -1
+      else diff = a.last_practiced.localeCompare(b.last_practiced)
+    }
     else {
       // empty values always last
       const av = a[key]
@@ -87,7 +93,7 @@ function SortHeader({
   )
 }
 
-export function TrickTable({ tricks, sort, onSort }: { tricks: Trick[]; sort: Sort; onSort: (sort: Sort) => void }) {
+export function TrickTable({ tricks, sort, onSort }: { tricks: TrickRow[]; sort: Sort; onSort: (sort: Sort) => void }) {
   const navigate = useNavigate()
   return (
     <div className="rounded-xl border">
@@ -99,7 +105,7 @@ export function TrickTable({ tricks, sort, onSort }: { tricks: Trick[]; sort: So
             <TableHead className="hidden lg:table-cell">Categories</TableHead>
             <SortHeader label="Difficulty" sortKey="difficulty" sort={sort} onSort={onSort} className="hidden sm:table-cell" />
             <SortHeader label="Duration" sortKey="duration_min" sort={sort} onSort={onSort} className="hidden md:table-cell" />
-            <SortHeader label="Updated" sortKey="updated_at" sort={sort} onSort={onSort} className="hidden xl:table-cell" />
+            <SortHeader label="Last practiced" sortKey="last_practiced" sort={sort} onSort={onSort} className="hidden xl:table-cell" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -117,8 +123,14 @@ export function TrickTable({ tricks, sort, onSort }: { tricks: Trick[]; sort: So
               <TableCell>
                 <TrickStatusBadge status={trick.status} />
               </TableCell>
-              <TableCell className="hidden text-muted-foreground lg:table-cell">
-                {trick.categories.map((c) => labelOf(TRICK_CATEGORIES, c)).join(', ') || '—'}
+              <TableCell className="hidden lg:table-cell">
+                <div className="flex flex-wrap gap-1">
+                  {trick.categories.length ? (
+                    trick.categories.map((c) => <CategoryBadge key={c} category={c} />)
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </div>
               </TableCell>
               <TableCell className="hidden sm:table-cell">
                 {trick.difficulty ? <StarRating value={trick.difficulty} /> : <span className="text-muted-foreground">—</span>}
@@ -126,7 +138,7 @@ export function TrickTable({ tricks, sort, onSort }: { tricks: Trick[]; sort: So
               <TableCell className="hidden text-muted-foreground tabular-nums md:table-cell">
                 {formatDuration(trick.duration_min)}
               </TableCell>
-              <TableCell className="hidden text-muted-foreground xl:table-cell">{formatRelative(trick.updated_at)}</TableCell>
+              <TableCell className="hidden text-muted-foreground xl:table-cell">{formatDayRelative(trick.last_practiced)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -137,7 +149,7 @@ export function TrickTable({ tricks, sort, onSort }: { tricks: Trick[]; sort: So
 
 /* ------------------------------------------------------------------ Cards */
 
-function TrickCardContent({ trick }: { trick: Trick }) {
+function TrickCardContent({ trick }: { trick: TrickRow }) {
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -147,22 +159,14 @@ function TrickCardContent({ trick }: { trick: Trick }) {
             <Clock className="size-3" aria-hidden="true" /> {formatDuration(trick.duration_min)}
           </span>
         )}
+        {trick.last_practiced && <span>Practiced {formatDayRelative(trick.last_practiced)}</span>}
       </div>
-      {trick.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {trick.tags.slice(0, 4).map((tag) => (
-            <Badge key={tag} variant="secondary" className="font-normal">
-              {tag}
-            </Badge>
-          ))}
-          {trick.tags.length > 4 && <span className="text-xs text-muted-foreground">+{trick.tags.length - 4}</span>}
-        </div>
-      )}
+      <TagList tags={trick.tags} max={4} />
     </>
   )
 }
 
-export function TrickCards({ tricks }: { tricks: Trick[] }) {
+export function TrickCards({ tricks }: { tricks: TrickRow[] }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {tricks.map((trick) => (
@@ -188,7 +192,7 @@ export function TrickCards({ tricks }: { tricks: Trick[] }) {
 
 /* ----------------------------------------------------------------- Kanban */
 
-function KanbanCard({ trick, overlay = false }: { trick: Trick; overlay?: boolean }) {
+function KanbanCard({ trick, overlay = false }: { trick: TrickRow; overlay?: boolean }) {
   return (
     <div
       className={cn(
@@ -202,7 +206,7 @@ function KanbanCard({ trick, overlay = false }: { trick: Trick; overlay?: boolea
   )
 }
 
-function DraggableCard({ trick, disabled }: { trick: Trick; disabled: boolean }) {
+function DraggableCard({ trick, disabled }: { trick: TrickRow; disabled: boolean }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: trick.id, disabled })
   const navigate = useNavigate()
   return (
@@ -239,7 +243,7 @@ function KanbanColumn({
   status: TrickStatus
   label: string
   dot: string
-  tricks: Trick[]
+  tricks: TrickRow[]
   disabled: boolean
   onAdd: (status: TrickStatus) => void
 }) {
@@ -274,7 +278,7 @@ function KanbanColumn({
   )
 }
 
-export function TrickKanban({ tricks, onAdd }: { tricks: Trick[]; onAdd: (status: TrickStatus) => void }) {
+export function TrickKanban({ tricks, onAdd }: { tricks: TrickRow[]; onAdd: (status: TrickStatus) => void }) {
   const updateStatus = useUpdateTrickStatus()
   const { canWrite } = useAccess()
   const [activeId, setActiveId] = useState<string | null>(null)

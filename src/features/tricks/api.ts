@@ -7,6 +7,13 @@ import { supabase } from '@/lib/supabase'
 import type { Tables, TablesInsert } from '@/types/database'
 
 export type Trick = Tables<'tricks'>
+/** Trick + stats computed by the tricks_overview view. */
+export type TrickRow = Trick & {
+  last_practiced: string | null
+  practice_sessions: number
+  practice_minutes: number
+  routine_count: number
+}
 export type TrickPropInput = { item_id: string; quantity_needed: number }
 
 export const trickKeys = {
@@ -18,7 +25,8 @@ export const trickKeys = {
 export function useTricks() {
   return useQuery({
     queryKey: trickKeys.list,
-    queryFn: () => unwrap(supabase.from('tricks').select('*').order('name')),
+    queryFn: async () =>
+      (await unwrap(supabase.from('tricks_overview').select('*').order('name'))) as TrickRow[],
   })
 }
 
@@ -31,9 +39,10 @@ export function useTrick(id: string | undefined) {
         supabase
           .from('tricks')
           .select(
-            '*, trick_props(id, item_id, quantity_needed, item:inventory_items(id, item_name, quantity, stock_status)), ideas(id, title)',
+            '*, trick_props(id, item_id, quantity_needed, item:inventory_items(id, item_name, quantity, stock_status, catalog_key)), ideas(id, title), routine_tricks(id, routine:routines(id, name, status)), practice_logs(id, practiced_on, title, time_spent_min, self_rating)',
           )
           .eq('id', id!)
+          .order('practiced_on', { referencedTable: 'practice_logs', ascending: false })
           .maybeSingle(),
       ),
   })
@@ -56,6 +65,7 @@ function useInvalidateTricks() {
     void queryClient.invalidateQueries({ queryKey: trickKeys.all })
     void queryClient.invalidateQueries({ queryKey: inventoryKeys.all })
     void queryClient.invalidateQueries({ queryKey: ['ideas'] })
+    void queryClient.invalidateQueries({ queryKey: ['routines'] })
   }
 }
 
@@ -108,8 +118,8 @@ export function useUpdateTrickStatus() {
       unwrap(supabase.from('tricks').update({ status }).eq('id', id).select().single()),
     onMutate: async ({ id, status }) => {
       await queryClient.cancelQueries({ queryKey: trickKeys.list })
-      const previous = queryClient.getQueryData<Trick[]>(trickKeys.list)
-      queryClient.setQueryData<Trick[]>(trickKeys.list, (rows) =>
+      const previous = queryClient.getQueryData<TrickRow[]>(trickKeys.list)
+      queryClient.setQueryData<TrickRow[]>(trickKeys.list, (rows) =>
         rows?.map((row) => (row.id === id ? { ...row, status } : row)),
       )
       return { previous }

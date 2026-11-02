@@ -1,4 +1,4 @@
-import { CalendarDays, CreditCard, LayoutDashboard, ListOrdered, Timer, Users } from 'lucide-react'
+import { CalendarDays, CreditCard, LayoutDashboard, Users } from 'lucide-react'
 import { ComingSoonPage } from './coming-soon-page'
 
 export const DashboardPage = () => (
@@ -9,28 +9,6 @@ export const DashboardPage = () => (
     emptyTitle="Your stage is set"
     emptyText="Upcoming gigs, tricks to polish, stock alerts and your practice streak will appear here."
     phase={5}
-  />
-)
-
-export const RoutinesPage = () => (
-  <ComingSoonPage
-    title="Routines"
-    description="Setlists built from your tricks."
-    icon={ListOrdered}
-    emptyTitle="No routines yet"
-    emptyText="Combine tricks into ordered sets with transitions and patter notes."
-    phase={3}
-  />
-)
-
-export const PracticePage = () => (
-  <ComingSoonPage
-    title="Practice log"
-    description="Track every rehearsal."
-    icon={Timer}
-    emptyTitle="No practice sessions yet"
-    emptyText="Log your sessions with the built-in timer and keep your streak alive."
-    phase={3}
   />
 )
 

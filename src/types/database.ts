@@ -53,6 +53,13 @@ export type Database = {
             referencedRelation: "tricks"
             referencedColumns: ["id", "user_id"]
           },
+          {
+            foreignKeyName: "ideas_trick_id_user_id_fkey"
+            columns: ["trick_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tricks_overview"
+            referencedColumns: ["id", "user_id"]
+          },
         ]
       }
       inventory_files: {
@@ -112,6 +119,7 @@ export type Database = {
       inventory_items: {
         Row: {
           buy_link: string | null
+          catalog_key: string | null
           cost: number | null
           created_at: string
           id: string
@@ -125,6 +133,7 @@ export type Database = {
         }
         Insert: {
           buy_link?: string | null
+          catalog_key?: string | null
           cost?: number | null
           created_at?: string
           id?: string
@@ -138,6 +147,7 @@ export type Database = {
         }
         Update: {
           buy_link?: string | null
+          catalog_key?: string | null
           cost?: number | null
           created_at?: string
           id?: string
@@ -150,6 +160,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      practice_logs: {
+        Row: {
+          created_at: string
+          id: string
+          notes_and_flaws_to_fix: string | null
+          practiced_on: string
+          routine_id: string | null
+          self_rating: number | null
+          status: string
+          time_spent_min: number | null
+          title: string
+          trick_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes_and_flaws_to_fix?: string | null
+          practiced_on?: string
+          routine_id?: string | null
+          self_rating?: number | null
+          status?: string
+          time_spent_min?: number | null
+          title: string
+          trick_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes_and_flaws_to_fix?: string | null
+          practiced_on?: string
+          routine_id?: string | null
+          self_rating?: number | null
+          status?: string
+          time_spent_min?: number | null
+          title?: string
+          trick_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_logs_routine_id_user_id_fkey"
+            columns: ["routine_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "practice_logs_routine_id_user_id_fkey"
+            columns: ["routine_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "routines_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "practice_logs_trick_id_user_id_fkey"
+            columns: ["trick_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tricks"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "practice_logs_trick_id_user_id_fkey"
+            columns: ["trick_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tricks_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -199,6 +283,101 @@ export type Database = {
           trial_ends_at?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      routine_tricks: {
+        Row: {
+          created_at: string
+          id: string
+          position: number
+          routine_id: string
+          transition_notes: string | null
+          trick_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          position: number
+          routine_id: string
+          transition_notes?: string | null
+          trick_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          position?: number
+          routine_id?: string
+          transition_notes?: string | null
+          trick_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routine_tricks_routine_id_user_id_fkey"
+            columns: ["routine_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "routine_tricks_routine_id_user_id_fkey"
+            columns: ["routine_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "routines_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "routine_tricks_trick_id_user_id_fkey"
+            columns: ["trick_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tricks"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "routine_tricks_trick_id_user_id_fkey"
+            columns: ["trick_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tricks_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
+      }
+      routines: {
+        Row: {
+          audience_types: string[]
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audience_types?: string[]
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          audience_types?: string[]
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -253,6 +432,13 @@ export type Database = {
             columns: ["trick_id", "user_id"]
             isOneToOne: false
             referencedRelation: "tricks"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "trick_props_trick_id_user_id_fkey"
+            columns: ["trick_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "tricks_overview"
             referencedColumns: ["id", "user_id"]
           },
         ]
@@ -319,6 +505,7 @@ export type Database = {
       inventory_overview: {
         Row: {
           buy_link: string | null
+          catalog_key: string | null
           cost: number | null
           created_at: string | null
           id: string | null
@@ -333,6 +520,7 @@ export type Database = {
         }
         Insert: {
           buy_link?: string | null
+          catalog_key?: string | null
           cost?: number | null
           created_at?: string | null
           id?: string | null
@@ -347,6 +535,7 @@ export type Database = {
         }
         Update: {
           buy_link?: string | null
+          catalog_key?: string | null
           cost?: number | null
           created_at?: string | null
           id?: string | null
@@ -361,11 +550,74 @@ export type Database = {
         }
         Relationships: []
       }
+      routine_props: {
+        Row: {
+          catalog_key: string | null
+          item_id: string | null
+          item_name: string | null
+          quantity: number | null
+          quantity_needed: number | null
+          routine_id: string | null
+          stock_status: string | null
+          used_by_tricks: string[] | null
+        }
+        Relationships: []
+      }
+      routines_overview: {
+        Row: {
+          audience_types: string[] | null
+          avg_difficulty: number | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          name: string | null
+          not_ready_count: number | null
+          status: string | null
+          total_duration_min: number | null
+          trick_count: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      tricks_overview: {
+        Row: {
+          categories: string[] | null
+          created_at: string | null
+          difficulty: number | null
+          duration_min: number | null
+          effect: string | null
+          id: string | null
+          last_practiced: string | null
+          name: string | null
+          notes: string | null
+          other_props: string | null
+          practice_minutes: number | null
+          practice_sessions: number | null
+          references_text: string | null
+          routine_count: number | null
+          secret_and_setup: string | null
+          status: string | null
+          tags: string[] | null
+          updated_at: string | null
+          user_id: string | null
+          video_url: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      add_trick_to_routine: {
+        Args: { p_routine_id: string; p_trick_id: string }
+        Returns: string
+      }
       apply_owner_policies: { Args: { tbl: unknown }; Returns: undefined }
       convert_idea_to_trick: { Args: { p_idea_id: string }; Returns: string }
       has_write_access: { Args: never; Returns: boolean }
+      reorder_routine_tricks: {
+        Args: { p_ids: string[]; p_routine_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

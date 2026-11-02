@@ -1,5 +1,6 @@
 import { useMemo, useState, type KeyboardEvent } from 'react'
 import { Plus, X } from 'lucide-react'
+import { tagColor } from '@/lib/colors'
 import { cn } from '@/lib/utils'
 
 type TagInputProps = {
@@ -50,13 +51,13 @@ export function TagInput({ value, onChange, suggestions = [], placeholder = 'Add
         {value.map((tag) => (
           <span
             key={tag}
-            className="inline-flex items-center gap-1 rounded-full border border-gold/30 bg-accent px-2 py-0.5 text-xs text-accent-foreground"
+            className={cn('inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium', tagColor(tag))}
           >
             {tag}
             <button
               type="button"
               onClick={() => onChange(value.filter((t) => t !== tag))}
-              className="rounded-full text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="rounded-full opacity-70 hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               aria-label={`Remove tag ${tag}`}
             >
               <X className="size-3" aria-hidden="true" />

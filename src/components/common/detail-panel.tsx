@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 
 type DetailPanelProps = {
   open: boolean
@@ -9,14 +10,16 @@ type DetailPanelProps = {
   description?: ReactNode
   actions?: ReactNode
   loading?: boolean
+  /** lg = wider panel for content-heavy views */
+  size?: 'md' | 'lg'
   children: ReactNode
 }
 
 /** Side panel on desktop, full screen on mobile. */
-export function DetailPanel({ open, onClose, title, description, actions, loading, children }: DetailPanelProps) {
+export function DetailPanel({ open, onClose, title, description, actions, loading, size = 'md', children }: DetailPanelProps) {
   return (
     <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
-      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-xl">
+      <SheetContent side="right" className={cn('flex w-full flex-col gap-0 p-0', size === 'lg' ? 'sm:max-w-2xl' : 'sm:max-w-xl')}>
         <SheetHeader className="border-b px-5 py-4 pr-12">
           <SheetTitle className="font-display text-2xl leading-tight font-semibold">
             {loading ? <Skeleton className="h-7 w-48" /> : title}

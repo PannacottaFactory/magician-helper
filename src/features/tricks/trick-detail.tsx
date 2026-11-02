@@ -1,20 +1,37 @@
 import { useId, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, Clock, Eye, EyeOff, ExternalLink, Lightbulb, Pencil, PlayCircle, Trash2 } from 'lucide-react'
+import {
+  AlertTriangle,
+  Clock,
+  Eye,
+  EyeOff,
+  ExternalLink,
+  Lightbulb,
+  ListOrdered,
+  NotebookPen,
+  Pencil,
+  PlayCircle,
+  Timer,
+  Trash2,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { DetailPanel, DetailSection } from '@/components/common/detail-panel'
 import { StarRating } from '@/components/common/star-rating'
 import { StockBadge } from '@/components/common/status-badge'
+import { CategoryBadge, TagList } from '@/components/common/tag-badge'
 import { WriteButton } from '@/components/common/write-button'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ItemVisual } from '@/features/inventory/item-visual'
+import { PracticeFormDialog } from '@/features/practice/practice-form-dialog'
+import { practiceTimer } from '@/features/practice/timer-store'
 import { useAccess } from '@/features/profile/api'
+import { RoutineStatusBadge } from '@/features/routines/routines-page'
 import { useUndoableDelete } from '@/hooks/use-undoable-delete'
-import { DIFFICULTY_LABELS, TRICK_CATEGORIES, TRICK_STATUSES, labelOf, type TrickStatus } from '@/lib/constants'
+import { DIFFICULTY_LABELS, TRICK_STATUSES, labelOf, type TrickStatus } from '@/lib/constants'
 import { dbErrorMessage } from '@/lib/db'
-import { formatDate, formatDuration, safeUrl } from '@/lib/format'
+import { formatDate, formatDayRelative, formatDuration, pluralize, safeUrl } from '@/lib/format'
 import { deleteTrick, trickKeys, useTrick, useUpdateTrickStatus } from './api'
 import { TrickFormDialog } from './trick-form-dialog'
 
@@ -26,6 +43,7 @@ export function TrickDetail() {
   const { canWrite } = useAccess()
   const updateStatus = useUpdateTrickStatus()
   const [editing, setEditing] = useState(false)
+  const [logging, setLogging] = useState(false)
   const [revealed, setRevealed] = useState(false)
   const secretId = useId()
   const close = () => navigate('/app/tricks')
@@ -47,6 +65,12 @@ export function TrickDetail() {
 
   const video = safeUrl(trick?.video_url)
   const otherProps = trick?.other_props?.split('\n').map((l) => l.trim()).filter(Boolean) ?? []
+  // routines using this trick (once each, even if it appears twice in a setlist)
+  const routines = [
+    ...new Map(
+      (trick?.routine_tricks ?? []).flatMap((rt) => (rt.routine ? [[rt.routine.id, rt.routine] as const] : [])),
+    ).values(),
+  ]
   const missingProps = trick?.trick_props.filter((tp) => tp.item && tp.item.quantity < tp.quantity_needed) ?? []
 
   return (
@@ -122,20 +146,12 @@ export function TrickDetail() {
               </span>
             )}
             {trick.categories.map((c) => (
-              <Badge key={c} variant="outline">
-                {labelOf(TRICK_CATEGORIES, c)}
-              </Badge>
+              <CategoryBadge key={c} category={c} />
             ))}
           </div>
 
           {trick.tags.length > 0 && (
-            <div className="-mt-3 mb-6 flex flex-wrap gap-1.5">
-              {trick.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="font-normal">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            <TagList tags={trick.tags} className="-mt-3 mb-6" />
           )}
 
           <DetailSection title="Effect">
@@ -202,9 +218,12 @@ export function TrickDetail() {
                         to={`/app/inventory/${tp.item.id}`}
                         className="flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                       >
-                        <span>
-                          {tp.item.item_name}
-                          {tp.quantity_needed > 1 && <span className="text-muted-foreground"> × {tp.quantity_needed}</span>}
+                        <span className="flex min-w-0 items-center gap-3">
+                          <ItemVisual catalogKey={tp.item.catalog_key} className="h-7 w-9 shrink-0 overflow-hidden rounded" />
+                          <span className="truncate">
+                            {tp.item.item_name}
+                            {tp.quantity_needed > 1 && <span className="text-muted-foreground"> × {tp.quantity_needed}</span>}
+                          </span>
                         </span>
                         <StockBadge status={tp.item.stock_status} />
                       </Link>
@@ -217,6 +236,69 @@ export function TrickDetail() {
                   </li>
                 ))}
               </ul>
+            )}
+          </DetailSection>
+
+          <DetailSection
+            title="Practice"
+            action={
+              <div className="flex gap-1">
+                <WriteButton size="sm" variant="ghost" onClick={() => practiceTimer.start({ title: trick.name, trickId: trick.id })}>
+                  <Timer aria-hidden="true" /> Start timer
+                </WriteButton>
+                <WriteButton size="sm" variant="ghost" onClick={() => setLogging(true)}>
+                  <NotebookPen aria-hidden="true" /> Log
+                </WriteButton>
+              </div>
+            }
+          >
+            {trick.practice_logs.length ? (
+              <>
+                <p className="mb-2 text-sm">
+                  Last practiced{' '}
+                  <span className="font-medium text-gold">{formatDayRelative(trick.practice_logs[0].practiced_on)}</span>
+                  <span className="text-muted-foreground">
+                    {' '}
+                    · {pluralize(trick.practice_logs.length, 'session')} ·{' '}
+                    {formatDuration(trick.practice_logs.reduce((s, l) => s + (l.time_spent_min ?? 0), 0))} in total
+                  </span>
+                </p>
+                <ul className="space-y-1 text-sm">
+                  {trick.practice_logs.slice(0, 5).map((log) => (
+                    <li key={log.id} className="flex items-center justify-between gap-2">
+                      <span className="truncate text-muted-foreground">{log.title}</span>
+                      <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+                        {log.self_rating && <StarRating value={log.self_rating} max={5} label="Self rating" />}
+                        {formatDayRelative(log.practiced_on)} · {formatDuration(log.time_spent_min)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">Never practiced yet.</p>
+            )}
+          </DetailSection>
+
+          <DetailSection title="In routines">
+            {routines.length ? (
+              <ul className="divide-y rounded-lg border">
+                {routines.map((routine) => (
+                  <li key={routine.id}>
+                    <Link
+                      to={`/app/routines/${routine.id}`}
+                      className="flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <ListOrdered className="size-4 text-violet-500" aria-hidden="true" /> {routine.name}
+                      </span>
+                      <RoutineStatusBadge status={routine.status} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">Not part of any routine yet.</p>
             )}
           </DetailSection>
 
@@ -266,6 +348,7 @@ export function TrickDetail() {
           </p>
 
           <TrickFormDialog open={editing} onOpenChange={setEditing} trick={trick} />
+          <PracticeFormDialog open={logging} onOpenChange={setLogging} defaults={{ title: trick.name, trickId: trick.id }} />
         </>
       )}
     </DetailPanel>

@@ -4,6 +4,7 @@ import { Logo } from '@/components/common/logo'
 import { useProfile } from '@/features/profile/api'
 import { useTheme, type Theme } from '@/hooks/use-theme'
 import { BottomTabs } from './bottom-tabs'
+import { ReadOnlyBanner } from './read-only-banner'
 import { Sidebar } from './sidebar'
 
 /** Applies the theme saved in the user's profile once, when it first loads. */
@@ -22,13 +23,15 @@ function useProfileTheme() {
 export function AppShell() {
   useProfileTheme()
   const { pathname } = useLocation()
+  // "/app/tricks/123" → "/app/tricks": opening a detail panel is not a page change
+  const section = pathname.split('/').slice(0, 3).join('/')
 
   // Move focus to the main region on navigation (keyboard & screen reader users)
   const mainRef = useRef<HTMLElement>(null)
   useEffect(() => {
     mainRef.current?.focus({ preventScroll: true })
     window.scrollTo({ top: 0 })
-  }, [pathname])
+  }, [section])
 
   return (
     <div className="min-h-dvh">
@@ -56,7 +59,8 @@ export function AppShell() {
         tabIndex={-1}
         className="pb-24 outline-none md:pb-0 md:pl-16 lg:pl-60"
       >
-        <div key={pathname} className="mx-auto w-full max-w-7xl px-4 py-6 animate-in fade-in-0 duration-300 sm:px-6 lg:px-8 lg:py-8">
+        <div key={section} className="mx-auto w-full max-w-7xl px-4 py-6 animate-in fade-in-0 duration-300 sm:px-6 lg:px-8 lg:py-8">
+          <ReadOnlyBanner />
           <Outlet />
         </div>
       </main>

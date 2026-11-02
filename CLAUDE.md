@@ -20,10 +20,13 @@ npm run dev        # local dev server (needs .env.local)
 npm run build      # typecheck + production build + 404.html SPA fallback
 npm run lint       # ESLint
 npm run test:sql   # run all migrations + supabase/tests/*.sql in PGlite (no Docker)
-npm run db:types   # regenerate src/types/database.ts (needs `npx supabase link`)
+npm run db:types   # regenerate src/types/database.ts from the linked project
+npx supabase db push --remote   # apply new migrations to the linked Supabase project
 ```
 
 Before every commit: `npm run build`, `npm run lint`, `npm run test:sql` must pass.
+
+End-to-end API tests against the real project live in `scripts/e2e/` (create a temporary user, then delete it). They need `SUPABASE_SERVICE_ROLE_KEY` in the environment — read it with `npx supabase projects api-keys -o json` (use the legacy `service_role` key; the new `sb_secret_` key returned by the CLI is rejected) and never write it to a file.
 
 ## Project layout
 
@@ -52,6 +55,11 @@ Before every commit: `npm run build`, `npm run lint`, `npm run test:sql` must pa
 Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_due` ⇒ write access. Otherwise the database refuses writes (RLS) and the UI disables create/edit actions and shows a subscribe banner. Use `useAccess()` from `src/features/profile/api.ts` in the UI.
 
 ### Frontend
+- Feature pages are lazy-loaded in `src/router.tsx` (`lazy: async () => ({ Component })`). List pages render an `<Outlet />` for their `:id` child route, which shows the `DetailPanel` (side sheet on desktop, full screen on mobile).
+- Shared building blocks: `EmptyState`, `DetailPanel`/`DetailSection`, `WriteButton` (auto-disabled in read-only mode), `SearchInput`/`ViewSwitcher`/`Toolbar`, `TagInput`, `ChipSelect`, `StarInput`/`StarRating`, `NumberInput` (`number | null`), `RichTextEditor`/`RichTextView` (sanitized), status badges.
+- Deletions go through `useUndoableDelete()` (6 s Undo toast, then the real DELETE); lists filter pending ones with `useWithoutPending()`.
+- Supabase calls are wrapped with `unwrap()` (`src/lib/db.ts`), errors shown with `toast.error(dbErrorMessage(e))`. External links must go through `safeUrl()`.
+- shadcn CLI quirk: it may import `cn` from a bogus `"cn"` npm package and add `next-themes`. After `npx shadcn add`, replace `from "cn"` with `from "@/lib/utils"`, `npm uninstall cn next-themes`, and never overwrite existing ui files (answer "n").
 - Import with the `@/` alias. Components in PascalCase, files in kebab-case.
 - Server data only through TanStack Query hooks in `features/*/api.ts`; throw Supabase errors, show them with `sonner` toasts.
 - Forms: `useForm<Values>({ resolver: zodResolver(schema) })` + shadcn `Form*` components (they handle labels/ARIA).
@@ -67,7 +75,7 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 ## Phase status
 
 - [x] Phase 1 — setup, auth, responsive layout, GitHub Pages deploy
-- [ ] Phase 2 — Tricks + Inventory + Ideas
+- [x] Phase 2 — Tricks + Inventory + Ideas
 - [ ] Phase 3 — Routines + Practice Log
 - [ ] Phase 4 — Clients + Gigs + calendar + prep checklist
 - [ ] Phase 5 — Dashboard, global search, export/import

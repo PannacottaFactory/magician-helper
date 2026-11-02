@@ -11,15 +11,21 @@ import {
   ClientsPage,
   DashboardPage,
   GigsPage,
-  IdeasPage,
-  InventoryPage,
   PracticePage,
   RoutinesPage,
-  TricksPage,
 } from '@/features/placeholders/pages'
 import { HomePage } from '@/features/public/home-page'
 import { LegalPlaceholderPage, NotFoundPage } from '@/features/public/simple-pages'
-import { SettingsPage } from '@/features/settings/settings-page'
+
+// Each feature is loaded on demand (code splitting): heavy libraries such as the
+// rich-text editor are only downloaded when their page is opened.
+const tricks = () => import('@/features/tricks/tricks-page')
+const trickDetail = () => import('@/features/tricks/trick-detail')
+const inventory = () => import('@/features/inventory/inventory-page')
+const inventoryDetail = () => import('@/features/inventory/inventory-detail')
+const ideas = () => import('@/features/ideas/ideas-page')
+const ideaDetail = () => import('@/features/ideas/idea-detail')
+const settings = () => import('@/features/settings/settings-page')
 
 // BrowserRouter-style routing. On GitHub Pages, deep links are served by 404.html
 // (a copy of index.html, see scripts/spa-fallback.mjs). `basename` = Vite `base`.
@@ -46,14 +52,26 @@ export const router = createBrowserRouter(
           element: <AppShell />,
           children: [
             { index: true, element: <DashboardPage /> },
-            { path: 'tricks', element: <TricksPage /> },
+            {
+              path: 'tricks',
+              lazy: async () => ({ Component: (await tricks()).TricksPage }),
+              children: [{ path: ':trickId', lazy: async () => ({ Component: (await trickDetail()).TrickDetail }) }],
+            },
             { path: 'routines', element: <RoutinesPage /> },
             { path: 'practice', element: <PracticePage /> },
             { path: 'gigs', element: <GigsPage /> },
             { path: 'clients', element: <ClientsPage /> },
-            { path: 'inventory', element: <InventoryPage /> },
-            { path: 'ideas', element: <IdeasPage /> },
-            { path: 'settings', element: <SettingsPage /> },
+            {
+              path: 'inventory',
+              lazy: async () => ({ Component: (await inventory()).InventoryPage }),
+              children: [{ path: ':itemId', lazy: async () => ({ Component: (await inventoryDetail()).InventoryDetail }) }],
+            },
+            {
+              path: 'ideas',
+              lazy: async () => ({ Component: (await ideas()).IdeasPage }),
+              children: [{ path: ':ideaId', lazy: async () => ({ Component: (await ideaDetail()).IdeaDetail }) }],
+            },
+            { path: 'settings', lazy: async () => ({ Component: (await settings()).SettingsPage }) },
             { path: 'billing', element: <BillingPage /> },
           ],
         },

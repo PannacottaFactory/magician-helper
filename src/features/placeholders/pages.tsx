@@ -1,14 +1,4 @@
-import {
-  CalendarDays,
-  CreditCard,
-  LayoutDashboard,
-  Lightbulb,
-  ListOrdered,
-  Package,
-  Sparkles,
-  Timer,
-  Users,
-} from 'lucide-react'
+import { CalendarDays, CreditCard, LayoutDashboard, ListOrdered, Timer, Users } from 'lucide-react'
 import { ComingSoonPage } from './coming-soon-page'
 
 export const DashboardPage = () => (
@@ -19,17 +9,6 @@ export const DashboardPage = () => (
     emptyTitle="Your stage is set"
     emptyText="Upcoming gigs, tricks to polish, stock alerts and your practice streak will appear here."
     phase={5}
-  />
-)
-
-export const TricksPage = () => (
-  <ComingSoonPage
-    title="Tricks"
-    description="Your repertoire library."
-    icon={Sparkles}
-    emptyTitle="No tricks yet"
-    emptyText="Add the effects you perform or want to learn, with their secrets, props and progress."
-    phase={2}
   />
 )
 
@@ -74,28 +53,6 @@ export const ClientsPage = () => (
     emptyTitle="No clients yet"
     emptyText="Keep contacts and see the full history of gigs for each client."
     phase={4}
-  />
-)
-
-export const InventoryPage = () => (
-  <ComingSoonPage
-    title="Inventory & gimmicks"
-    description="Every prop, with stock alerts."
-    icon={Package}
-    emptyTitle="Your prop case is empty"
-    emptyText="Track quantities, photos and where to rebuy each prop and gimmick."
-    phase={2}
-  />
-)
-
-export const IdeasPage = () => (
-  <ComingSoonPage
-    title="Ideas"
-    description="Your notebook for future magic."
-    icon={Lightbulb}
-    emptyTitle="No ideas yet"
-    emptyText="Capture plots, presentations and patter lines, then turn them into tricks."
-    phase={2}
   />
 )
 

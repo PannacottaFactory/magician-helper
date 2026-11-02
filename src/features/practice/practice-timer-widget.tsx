@@ -18,12 +18,15 @@ export function PracticeTimerWidget() {
 
   return (
     <>
-      {timer.active && (
+      {timer.active && logging === null && (
         <div
+          data-floating-widget
           role="region"
           aria-label="Practice timer"
           className={cn(
-            'fixed right-4 bottom-20 z-40 flex items-center gap-1 rounded-full border border-gold/50 bg-popover/95 py-1.5 pr-1.5 pl-4 shadow-lg shadow-black/30 backdrop-blur md:bottom-6',
+            // Above panels and dialogs (z-50). Bottom-left on desktop so it never covers the right-hand detail panel.
+            'pointer-events-auto fixed right-4 bottom-20 z-[60] flex items-center gap-1 rounded-full border border-gold/50 bg-popover/95 py-1.5 pr-1.5 pl-4 shadow-lg shadow-black/30 backdrop-blur',
+            'md:right-auto md:bottom-6 md:left-20 lg:left-64',
             'animate-in fade-in-0 slide-in-from-bottom-4',
           )}
         >

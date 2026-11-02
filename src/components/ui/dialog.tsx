@@ -47,6 +47,11 @@ function DialogOverlay({
   )
 }
 
+/** Clicking a floating widget (e.g. the practice timer) must not close the panel. */
+function keepOpenForFloatingWidgets(event: { target: EventTarget | null; preventDefault: () => void }) {
+  if ((event.target as HTMLElement | null)?.closest?.("[data-floating-widget]")) event.preventDefault()
+}
+
 function DialogContent({
   className,
   children,
@@ -65,6 +70,10 @@ function DialogContent({
           className
         )}
         {...props}
+        onInteractOutside={(event) => {
+          keepOpenForFloatingWidgets(event)
+          props.onInteractOutside?.(event)
+        }}
       >
         {children}
         {showCloseButton && (

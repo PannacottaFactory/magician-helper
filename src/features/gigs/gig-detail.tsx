@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, CalendarDays, Clock, ListOrdered, MapPin, Pencil, Tag, Trash2, User } from 'lucide-react'
+import { AlertTriangle, CalendarDays, Clock, ClipboardList, ListOrdered, Loader2, MapPin, Pencil, Tag, Trash2, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { DetailPanel, DetailSection } from '@/components/common/detail-panel'
 import { WriteButton } from '@/components/common/write-button'
+import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ClientAvatar } from '@/features/clients/clients-page'
+import { GigDocuments } from '@/features/documents/gig-documents'
 import { useAccess } from '@/features/profile/api'
 import { RoutineStatusBadge } from '@/features/routines/routines-page'
 import { useNow } from '@/hooks/use-now'
@@ -15,7 +17,7 @@ import { PAYMENT_STATUSES, labelOf, type PaymentStatus } from '@/lib/constants'
 import { dbErrorMessage } from '@/lib/db'
 import { formatCurrency, formatDuration, formatGigWhen, formatRelative } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { deleteGig, gigKeys, useGig, useUpdatePaymentStatus } from './api'
+import { deleteGig, fetchShowSheet, gigKeys, useGig, useUpdatePaymentStatus } from './api'
 import { GigChecklist } from './gig-checklist'
 import { GigFormDialog } from './gig-form-dialog'
 
@@ -27,6 +29,7 @@ export function GigDetailPanel() {
   const { canWrite } = useAccess()
   const updatePayment = useUpdatePaymentStatus()
   const [editing, setEditing] = useState(false)
+  const [printing, setPrinting] = useState(false)
   const now = useNow()
   const close = () => navigate('/app/gigs')
   const undoableDelete = useUndoableDelete({
@@ -55,6 +58,19 @@ export function GigDetailPanel() {
   )
   const notReady = routines.flatMap((gr) => gr.routine?.routine_tricks.filter((rt) => rt.trick && rt.trick.status !== 'performance_ready') ?? [])
   const isPast = gig ? new Date(gig.starts_at).getTime() < now : false
+  async function downloadShowSheet() {
+    if (!gig) return
+    setPrinting(true)
+    try {
+      const [{ downloadShowSheetPdf }, data] = await Promise.all([import('@/features/documents/pdf/download'), fetchShowSheet(gig.id)])
+      await downloadShowSheetPdf(data)
+    } catch (error) {
+      console.error(error)
+      toast.error('Could not create the show sheet. Check your connection and try again.')
+    } finally {
+      setPrinting(false)
+    }
+  }
   const mapsUrl = gig?.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gig.location)}` : null
 
   return (
@@ -77,6 +93,10 @@ export function GigDetailPanel() {
       actions={
         gig && (
           <>
+            <Button size="sm" variant="outline" onClick={downloadShowSheet} disabled={printing}>
+              {printing ? <Loader2 className="animate-spin" aria-hidden="true" /> : <ClipboardList aria-hidden="true" />}
+              Show sheet
+            </Button>
             <WriteButton size="sm" variant="outline" onClick={() => setEditing(true)}>
               <Pencil aria-hidden="true" /> Edit
             </WriteButton>
@@ -188,6 +208,10 @@ export function GigDetailPanel() {
                 </div>
               </dl>
             </div>
+          </DetailSection>
+
+          <DetailSection title="Quotes & invoices">
+            <GigDocuments gig={gig} />
           </DetailSection>
 
           <DetailSection title={`Routines${showMinutes ? ` · ${formatDuration(showMinutes)} of show` : ''}`}>

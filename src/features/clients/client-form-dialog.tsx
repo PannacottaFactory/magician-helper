@@ -19,6 +19,7 @@ const clientSchema = z.object({
   email: z.union([z.literal(''), z.string().trim().email('Enter a valid email').max(320)]),
   phone: z.string().trim().max(50, 'Too long'),
   contact_link: optionalUrl,
+  billing_address: z.string().max(1000, 'Too long'),
   notes: z.string().max(20_000),
 })
 type ClientValues = z.infer<typeof clientSchema>
@@ -30,6 +31,7 @@ function toValues(client?: Client | null, defaultName = ''): ClientValues {
     email: client?.email ?? '',
     phone: client?.phone ?? '',
     contact_link: client?.contact_link ?? '',
+    billing_address: client?.billing_address ?? '',
     notes: client?.notes ?? '',
   }
 }
@@ -62,6 +64,7 @@ export function ClientFormDialog({
           email: values.email || null,
           phone: values.phone || null,
           contact_link: values.contact_link || null,
+          billing_address: values.billing_address.trim() || null,
           notes: values.notes || null,
         },
       })
@@ -144,6 +147,19 @@ export function ClientFormDialog({
                   <FormLabel>Link (website, LinkedIn, Instagram…)</FormLabel>
                   <FormControl>
                     <Input type="url" placeholder="https://…" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="billing_address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Billing address</FormLabel>
+                  <FormControl>
+                    <Textarea rows={3} placeholder={'12 rue de la Paix\n75002 Paris'} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

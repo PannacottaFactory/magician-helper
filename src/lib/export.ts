@@ -15,6 +15,8 @@ export const EXPORT_TABLES = [
   'gigs',
   'gig_routines',
   'gig_checklist_items',
+  'business_profiles',
+  'documents',
 ] as const
 type ExportTable = (typeof EXPORT_TABLES)[number]
 
@@ -75,11 +77,12 @@ export async function exportJson() {
   return Object.values(tables).reduce((n, rows) => n + rows.length, 0)
 }
 
-/** CSV cell values: arrays become "a; b", objects become JSON. */
+/** CSV cell values: lists of plain values become "a; b", objects and lists of objects become JSON. */
 function flatten(row: Record<string, unknown>) {
   const out: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(row)) {
-    out[key] = Array.isArray(value) ? value.join('; ') : value !== null && typeof value === 'object' ? JSON.stringify(value) : value
+    const plainList = Array.isArray(value) && value.every((v) => v === null || typeof v !== 'object')
+    out[key] = plainList ? value.join('; ') : value !== null && typeof value === 'object' ? JSON.stringify(value) : value
   }
   return out
 }

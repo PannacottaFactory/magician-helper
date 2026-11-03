@@ -34,7 +34,7 @@ function fetchGig(id: string) {
     supabase
       .from('gigs')
       .select(
-        '*, client:clients(id, name, company, email, phone), gig_routines(id, position, routine:routines(id, name, status, routine_tricks(id, trick:tricks(duration_min, status))))',
+        '*, client:clients(id, name, company, email, phone, billing_address), gig_routines(id, position, routine:routines(id, name, status, routine_tricks(id, trick:tricks(duration_min, status))))',
       )
       .eq('id', id)
       .order('position', { referencedTable: 'gig_routines' })
@@ -159,3 +159,34 @@ export function useSyncChecklist(gigId: string) {
 export async function deleteGig(id: string) {
   await unwrap(supabase.from('gigs').delete().eq('id', id))
 }
+
+/** Everything printed on the show sheet, read fresh when the PDF is generated. */
+export async function fetchShowSheet(gigId: string) {
+  const gig = await unwrap(
+    supabase
+      .from('gigs')
+      .select(
+        'id, title, starts_at, ends_at, location, event_type, notes, client:clients(name, company, phone, email), gig_routines(id, position, routine:routines(id, name, routine_tricks(id, position, transition_notes, trick:tricks(id, name, duration_min))))',
+      )
+      .eq('id', gigId)
+      .order('position', { referencedTable: 'gig_routines' })
+      .single(),
+  )
+  const checklist = await unwrap(
+    supabase.from('gig_checklist_items').select('id, label, quantity_needed, is_checked, source').eq('gig_id', gigId).order('label'),
+  )
+  const routines = gig.gig_routines
+    .filter((gr) => gr.routine)
+    .map((gr) => ({
+      id: gr.routine!.id,
+      name: gr.routine!.name,
+      tricks: [...gr.routine!.routine_tricks]
+        .sort((a, b) => a.position - b.position)
+        .filter((rt) => rt.trick)
+        .map((rt) => ({ id: rt.id, name: rt.trick!.name, duration_min: rt.trick!.duration_min, transition_notes: rt.transition_notes })),
+    }))
+  // Props first (auto), then manual items
+  const sorted = [...checklist].sort((a, b) => Number(a.source === 'manual') - Number(b.source === 'manual') || a.label.localeCompare(b.label))
+  return { gig, routines, checklist: sorted }
+}
+export type ShowSheetData = Awaited<ReturnType<typeof fetchShowSheet>>

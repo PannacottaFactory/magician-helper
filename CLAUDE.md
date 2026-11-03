@@ -1,6 +1,6 @@
 # Magician Helper
 
-SaaS web app for professional magicians: repertoire (tricks), routines/setlists, practice log, clients, gigs (calendar + prep checklist), inventory of props/gimmicks, ideas notebook. **All UI text is in English.** The project owner speaks French (explanations to them in French).
+SaaS web app for professional magicians: repertoire (tricks), routines/setlists, practice log, clients, gigs (calendar + prep checklist + show sheet), quotes & invoices, calendar feed, inventory of props/gimmicks, ideas notebook. **All UI text is in English.** The project owner speaks French (explanations to them in French).
 
 Full plan, SQL design and decisions: [PLAN.md](PLAN.md). Setup guide: [README.md](README.md).
 
@@ -37,7 +37,7 @@ End-to-end API tests against the real project live in `scripts/e2e/` (create a t
 - `src/hooks/` — theme, etc.
 - `supabase/migrations/` — SQL migrations (apply with `npx supabase db push --remote`; CLI v3 targets local by default), one per phase, named `YYYYMMDDHHMMSS_name.sql`
 - `supabase/tests/` — SQL tests (RLS, triggers, functions) run by `npm run test:sql`
-- `supabase/functions/` — Edge Functions (Deno): `create-checkout-session`, `create-portal-session`, `stripe-webhook` (deployed with `--no-verify-jwt`, checks the Stripe signature), `delete-account`; shared code in `_shared/`. Deploy with `npx supabase functions deploy <name> --use-api`. Stripe setup: `scripts/stripe-setup.mjs` (reads `.env.stripe.local`, writes `.env.functions.local`, both git-ignored).
+- `supabase/functions/` — Edge Functions (Deno): `create-checkout-session`, `create-portal-session`, `stripe-webhook` (deployed with `--no-verify-jwt`, checks the Stripe signature), `delete-account`, `calendar-feed` (iCalendar of the user's gigs, `--no-verify-jwt`, the secret token from `calendar_feeds` is the credential); shared code in `_shared/`. Deploy with `npx supabase functions deploy <name> --use-api`. Stripe setup: `scripts/stripe-setup.mjs` (reads `.env.stripe.local`, writes `.env.functions.local`, both git-ignored).
 
 ## Conventions
 
@@ -68,6 +68,9 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - Tags get a stable color from `tagColor()` (`src/lib/colors.ts`); use `TagBadge`/`TagList`, `CategoryBadge`, `AudienceBadge`.
 - Global search: `search_all(q)` RPC + `CommandPalette` (Cmd/Ctrl+K, open with `setSearchOpen`). Export: `src/lib/export.ts` (paginated reads, JSON or zipped CSVs). Tricks CSV import: `features/tricks/import-csv.ts` (header aliases, per-row errors/warnings, batches of 200).
 - Never call `Date.now()` / `new Date()` for "now" during render (React compiler lint error): use `useNow()` from `src/hooks/use-now.ts`.
+- Quotes & invoices (`features/documents/`, route `/app/invoices`): `documents` rows are drafts until `finalize_document(id)` (SQL) assigns the number (Q-/INV-YYYY-0001, per-user counters in `document_counters`) and freezes the seller block from `business_profiles`. Triggers compute totals from the `lines` jsonb, lock finalized content (only `status` may change) and forbid deleting finalized invoices. Never let the client set `number`/`status` directly.
+- PDFs (invoice/quote, gig show sheet) are built in the browser with `@react-pdf/renderer`, always through the dynamic imports in `features/documents/pdf/download.tsx` (1.2 MB chunk, excluded from the PWA precache). Fonts: `public/fonts/*.ttf` (Inter, Cormorant; latin + latin-ext). PDF colors are fixed print colors (`pdf-theme.ts`), not theme tokens.
+- Forms editing server data that can refetch in the background: remount with a `key` (e.g. `id:updated_at`) instead of `form.reset` in an effect, so edits in progress are never wiped.
 - Gig checklist: a DB trigger on `gig_routines` calls `sync_gig_checklist()`; the UI also offers a Refresh button (routines may change after linking). Floating widgets must carry `data-floating-widget` so clicking them does not close sheets/dialogs.
 - The practice timer lives in `features/practice/timer-store.ts` (localStorage, survives navigation/reload); the floating widget is rendered by `AppShell`.
 - PWA: `vite-plugin-pwa` in `vite.config.ts` (autoUpdate; Supabase data never cached). Icons in `public/icons/`. `RouteError` (root `errorElement`) reloads once when a deploy removed old code chunks.
@@ -92,3 +95,4 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - [x] Phase 5 — Dashboard, global search, export/import
 - [x] Phase 6 — Trial, Stripe, read-only mode, Billing page
 - [x] Phase 7 — Landing page, PWA, polish, accessibility
+- [x] Phase 8 — Business details, quotes & invoices (PDF), show sheet (PDF), calendar feed

@@ -424,3 +424,6 @@ enabled = true
 # Stripe calls the webhook without a Supabase token: it is authenticated by the Stripe signature.
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.calendar-feed]
+verify_jwt = false

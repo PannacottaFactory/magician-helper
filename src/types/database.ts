@@ -14,8 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_profiles: {
+        Row: {
+          address: string | null
+          business_name: string | null
+          created_at: string
+          default_tax_rate: number
+          email: string | null
+          id: string
+          legal_note: string | null
+          payment_instructions: string | null
+          payment_terms_days: number
+          phone: string | null
+          quote_validity_days: number
+          tax_id: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_name?: string | null
+          created_at?: string
+          default_tax_rate?: number
+          email?: string | null
+          id?: string
+          legal_note?: string | null
+          payment_instructions?: string | null
+          payment_terms_days?: number
+          phone?: string | null
+          quote_validity_days?: number
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_name?: string | null
+          created_at?: string
+          default_tax_rate?: number
+          email?: string | null
+          id?: string
+          legal_note?: string | null
+          payment_instructions?: string | null
+          payment_terms_days?: number
+          phone?: string | null
+          quote_validity_days?: number
+          tax_id?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      calendar_feeds: {
+        Row: {
+          created_at: string
+          id: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
+          billing_address: string | null
           company: string | null
           contact_link: string | null
           created_at: string
@@ -28,6 +107,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billing_address?: string | null
           company?: string | null
           contact_link?: string | null
           created_at?: string
@@ -40,6 +120,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          billing_address?: string | null
           company?: string | null
           contact_link?: string | null
           created_at?: string
@@ -52,6 +133,152 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      document_counters: {
+        Row: {
+          created_at: string
+          kind: string
+          last_value: number
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          kind: string
+          last_value?: number
+          updated_at?: string
+          user_id?: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          kind?: string
+          last_value?: number
+          updated_at?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          amount_due: number
+          buyer_address: string | null
+          buyer_company: string | null
+          buyer_email: string | null
+          buyer_name: string | null
+          client_id: string | null
+          created_at: string
+          currency: string
+          deposit_paid: number
+          due_date: string | null
+          finalized_at: string | null
+          gig_id: string | null
+          id: string
+          issue_date: string
+          kind: string
+          lines: Json
+          notes: string | null
+          number: string | null
+          seller: Json | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          title: string | null
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_due?: number
+          buyer_address?: string | null
+          buyer_company?: string | null
+          buyer_email?: string | null
+          buyer_name?: string | null
+          client_id?: string | null
+          created_at?: string
+          currency?: string
+          deposit_paid?: number
+          due_date?: string | null
+          finalized_at?: string | null
+          gig_id?: string | null
+          id?: string
+          issue_date?: string
+          kind: string
+          lines?: Json
+          notes?: string | null
+          number?: string | null
+          seller?: Json | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          title?: string | null
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          amount_due?: number
+          buyer_address?: string | null
+          buyer_company?: string | null
+          buyer_email?: string | null
+          buyer_name?: string | null
+          client_id?: string | null
+          created_at?: string
+          currency?: string
+          deposit_paid?: number
+          due_date?: string | null
+          finalized_at?: string | null
+          gig_id?: string | null
+          id?: string
+          issue_date?: string
+          kind?: string
+          lines?: Json
+          notes?: string | null
+          number?: string | null
+          seller?: Json | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          title?: string | null
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_client_id_user_id_fkey"
+            columns: ["client_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "documents_client_id_user_id_fkey"
+            columns: ["client_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "clients_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "documents_gig_id_user_id_fkey"
+            columns: ["gig_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "gigs"
+            referencedColumns: ["id", "user_id"]
+          },
+          {
+            foreignKeyName: "documents_gig_id_user_id_fkey"
+            columns: ["gig_id", "user_id"]
+            isOneToOne: false
+            referencedRelation: "gigs_overview"
+            referencedColumns: ["id", "user_id"]
+          },
+        ]
       }
       gig_checklist_items: {
         Row: {
@@ -760,6 +987,7 @@ export type Database = {
     Views: {
       clients_overview: {
         Row: {
+          billing_address: string | null
           company: string | null
           contact_link: string | null
           created_at: string | null
@@ -929,6 +1157,44 @@ export type Database = {
       }
       apply_owner_policies: { Args: { tbl: unknown }; Returns: undefined }
       convert_idea_to_trick: { Args: { p_idea_id: string }; Returns: string }
+      finalize_document: {
+        Args: { p_id: string }
+        Returns: {
+          amount_due: number
+          buyer_address: string | null
+          buyer_company: string | null
+          buyer_email: string | null
+          buyer_name: string | null
+          client_id: string | null
+          created_at: string
+          currency: string
+          deposit_paid: number
+          due_date: string | null
+          finalized_at: string | null
+          gig_id: string | null
+          id: string
+          issue_date: string
+          kind: string
+          lines: Json
+          notes: string | null
+          number: string | null
+          seller: Json | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          title: string | null
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "documents"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_write_access: { Args: never; Returns: boolean }
       my_access: {
         Args: never

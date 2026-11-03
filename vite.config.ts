@@ -41,6 +41,8 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+          // the PDF library is large and only needed when generating a PDF (fetched on demand)
+          globIgnores: ['**/react-pdf*.js'],
           navigateFallback: 'index.html',
           cleanupOutdatedCaches: true,
           clientsClaim: true,

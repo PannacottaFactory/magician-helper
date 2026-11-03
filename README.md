@@ -116,8 +116,9 @@ The secret keys live **only** in Supabase Edge Function secrets — never in the
    npx supabase functions deploy create-portal-session --use-api
    npx supabase functions deploy delete-account --use-api
    npx supabase functions deploy stripe-webhook --use-api --no-verify-jwt
+   npx supabase functions deploy calendar-feed --use-api --no-verify-jwt
    ```
-   `--no-verify-jwt` is only for the webhook: Stripe has no Supabase token, the function checks the Stripe signature instead.
+   `--no-verify-jwt` is only for the webhook and the calendar feed: Stripe and calendar apps have no Supabase token. The webhook checks the Stripe signature; the calendar feed checks the secret token in its URL.
 6. **Test a payment**: in the app → Billing → Subscribe, use the card `4242 4242 4242 4242`, any future date, any CVC. Back in the app, the status becomes *Subscribed*. Then try **Manage subscription** (Customer Portal) and cancel.
    Other test cards: `4000 0000 0000 0341` (payment fails later → `past_due`), `4000 0025 0000 3155` (3-D Secure).
 

@@ -29,6 +29,8 @@ const legal = () => import('@/features/public/legal-pages')
 const dashboard = () => import('@/features/dashboard/dashboard-page')
 const billing = () => import('@/features/billing/billing-page')
 const settings = () => import('@/features/settings/settings-page')
+const documents = () => import('@/features/documents/documents-page')
+const documentDetail = () => import('@/features/documents/document-detail')
 
 // BrowserRouter-style routing. On GitHub Pages, deep links are served by 404.html
 // (a copy of index.html, see scripts/spa-fallback.mjs). `basename` = Vite `base`.
@@ -79,6 +81,11 @@ export const router = createBrowserRouter(
               path: 'clients',
               lazy: async () => ({ Component: (await clients()).ClientsPage }),
               children: [{ path: ':clientId', lazy: async () => ({ Component: (await clientDetail()).ClientDetail }) }],
+            },
+            {
+              path: 'invoices',
+              lazy: async () => ({ Component: (await documents()).DocumentsPage }),
+              children: [{ path: ':docId', lazy: async () => ({ Component: (await documentDetail()).DocumentDetail }) }],
             },
             {
               path: 'inventory',

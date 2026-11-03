@@ -91,6 +91,23 @@ export const PAYMENT_STATUSES = [
 ] as const
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number]['value']
 
+export const QUOTE_STATUSES = [
+  { value: 'draft', label: 'Draft', badge: 'border-dashed border-border text-muted-foreground', dot: 'bg-muted-foreground' },
+  { value: 'sent', label: 'Sent', badge: 'border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300', dot: 'bg-sky-400' },
+  { value: 'accepted', label: 'Accepted', badge: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300', dot: 'bg-emerald-400' },
+  { value: 'declined', label: 'Declined', badge: 'border-border bg-muted text-muted-foreground line-through', dot: 'bg-muted-foreground' },
+] as const
+
+export const INVOICE_STATUSES = [
+  { value: 'draft', label: 'Draft', badge: 'border-dashed border-border text-muted-foreground', dot: 'bg-muted-foreground' },
+  { value: 'issued', label: 'Issued', badge: 'border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300', dot: 'bg-amber-400' },
+  { value: 'paid', label: 'Paid', badge: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300', dot: 'bg-emerald-400' },
+  { value: 'canceled', label: 'Canceled', badge: 'border-border bg-muted text-muted-foreground line-through', dot: 'bg-muted-foreground' },
+] as const
+
+export type DocumentStatusOption = { value: string; label: string; badge: string; dot: string }
+export const statusesFor = (kind: string): readonly DocumentStatusOption[] => (kind === 'quote' ? QUOTE_STATUSES : INVOICE_STATUSES)
+
 export const EVENT_TYPES = [
   'Birthday party',
   'Corporate event',

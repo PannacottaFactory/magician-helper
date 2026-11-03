@@ -33,7 +33,8 @@ export function DetailPanel({ open, onClose, title, description, actions, loadin
           )}
           {actions && <div className="flex flex-wrap gap-2 pt-2">{actions}</div>}
         </SheetHeader>
-        <div className="flex-1 overflow-y-auto px-5 py-5">
+        {/* scroll padding: fields focused near the bottom stay clear of sticky form footers */}
+        <div className="flex-1 scroll-pb-24 overflow-y-auto px-5 py-5">
           {loading ? (
             <div className="space-y-4">
               <Skeleton className="h-4 w-3/4" />

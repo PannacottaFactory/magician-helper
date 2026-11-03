@@ -5,6 +5,7 @@ import {
   Lightbulb,
   ListOrdered,
   Package,
+  ReceiptText,
   Settings,
   Sparkles,
   Timer,
@@ -27,6 +28,7 @@ export const mainNav: NavItem[] = [
   { to: '/app/practice', label: 'Practice', icon: Timer },
   { to: '/app/gigs', label: 'Gigs', icon: CalendarDays },
   { to: '/app/clients', label: 'Clients', icon: Users },
+  { to: '/app/invoices', label: 'Invoices', icon: ReceiptText },
   { to: '/app/inventory', label: 'Inventory', icon: Package },
   { to: '/app/ideas', label: 'Ideas', icon: Lightbulb },
 ]

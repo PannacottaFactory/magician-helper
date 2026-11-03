@@ -30,6 +30,8 @@ import { useTheme, type Theme } from '@/hooks/use-theme'
 import { CURRENCIES } from '@/lib/constants'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { BusinessCard } from './business-card'
+import { CalendarCard } from './calendar-card'
 
 const profileSchema = z.object({
   display_name: z.string().trim().max(100, 'Too long'),
@@ -49,6 +51,8 @@ export function SettingsPage() {
       <div className="grid max-w-2xl gap-6">
         <ProfileCard />
         <CurrencyCard />
+        <BusinessCard />
+        <CalendarCard />
         <PracticeCard />
         <ThemeCard />
         <DataCard />
@@ -254,7 +258,7 @@ function DataCard() {
       <CardHeader>
         <CardTitle>Your data</CardTitle>
         <CardDescription>
-          Download everything you've entered — tricks, routines, practice, gigs, clients, inventory and ideas. Available
+          Download everything you've entered — tricks, routines, practice, gigs, clients, quotes and invoices, inventory and ideas. Available
           at any time, even after your trial.
         </CardDescription>
       </CardHeader>

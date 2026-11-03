@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { CalendarPlus, ExternalLink, Mail, Pencil, Phone, Trash2 } from 'lucide-react'
+import { CalendarPlus, ExternalLink, Mail, MapPin, Pencil, Phone, Trash2 } from 'lucide-react'
 import { DetailPanel, DetailSection } from '@/components/common/detail-panel'
 import { WriteButton } from '@/components/common/write-button'
 import { GigFormDialog } from '@/features/gigs/gig-form-dialog'
@@ -86,7 +86,7 @@ export function ClientDetail() {
       {client && (
         <>
           <DetailSection title="Contact">
-            {client.email || client.phone || link ? (
+            {client.email || client.phone || link || client.billing_address ? (
               <ul className="space-y-1.5 text-sm">
                 {client.email && (
                   <li>
@@ -108,6 +108,15 @@ export function ClientDetail() {
                       <ExternalLink className="size-4 text-muted-foreground" aria-hidden="true" /> {new URL(link).hostname}
                       <span className="sr-only">(opens in a new tab)</span>
                     </a>
+                  </li>
+                )}
+                {client.billing_address && (
+                  <li className="flex items-start gap-2">
+                    <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                    <span className="whitespace-pre-line">
+                      <span className="sr-only">Billing address: </span>
+                      {client.billing_address}
+                    </span>
                   </li>
                 )}
               </ul>

@@ -123,7 +123,7 @@ export function ImportTricksDialog({ open, onOpenChange }: { open: boolean; onOp
                 <CheckCircle2 className="size-4" aria-hidden="true" /> {pluralize(valid.length, 'valid trick')}
               </li>
               {invalid.length > 0 && (
-                <li className="flex items-center gap-2 text-destructive">
+                <li className="flex items-center gap-2 text-danger">
                   <XCircle className="size-4" aria-hidden="true" /> {pluralize(invalid.length, 'row')} will be skipped (
                   {invalid
                     .slice(0, 3)

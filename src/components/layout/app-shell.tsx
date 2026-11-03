@@ -8,6 +8,7 @@ import { Search } from 'lucide-react'
 import { useProfile } from '@/features/profile/api'
 import { useTheme, type Theme } from '@/hooks/use-theme'
 import { BottomTabs } from './bottom-tabs'
+import { OfflineBanner } from './offline-banner'
 import { ReadOnlyBanner } from './read-only-banner'
 import { Sidebar } from './sidebar'
 
@@ -72,6 +73,7 @@ export function AppShell() {
         className="pb-24 outline-none md:pb-0 md:pl-16 lg:pl-60"
       >
         <div key={section} className="mx-auto w-full max-w-7xl px-4 py-6 animate-in fade-in-0 duration-300 sm:px-6 lg:px-8 lg:py-8">
+          <OfflineBanner />
           <ReadOnlyBanner />
           <Outlet />
         </div>

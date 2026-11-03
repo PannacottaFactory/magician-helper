@@ -83,7 +83,7 @@ export function IdeasPage() {
           {filtered.length === 0 ? (
             <p className="py-12 text-center text-sm text-muted-foreground">No ideas match your search.</p>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((idea) => (
                 <Card key={idea.id} className="group relative gap-2 p-4 transition-colors hover:border-gold/40">
                   <Link

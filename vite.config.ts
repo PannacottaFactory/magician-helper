@@ -2,13 +2,64 @@ import path from 'node:path'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // VITE_BASE_PATH = "/magician-helper/" on GitHub Pages, "/" locally or with a custom domain.
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     base: env.VITE_BASE_PATH || '/',
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      // Installable app (PWA). The app shell is cached for fast start; Supabase
+      // data is never cached by the service worker (always fresh and private).
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png', 'robots.txt'],
+        manifest: {
+          name: 'Magician Helper',
+          short_name: 'Magician Helper',
+          description: 'Repertoire, routines, practice, gigs and props for professional magicians.',
+          lang: 'en',
+          theme_color: '#0e0e0f',
+          background_color: '#0e0e0f',
+          display: 'standalone',
+          orientation: 'any',
+          start_url: '.',
+          scope: '.',
+          categories: ['productivity', 'business', 'entertainment'],
+          icons: [
+            { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+            { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+            { src: 'icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          ],
+          shortcuts: [
+            { name: 'Practice log', url: 'app/practice', icons: [{ src: 'icons/icon-192.png', sizes: '192x192' }] },
+            { name: 'Gigs', url: 'app/gigs', icons: [{ src: 'icons/icon-192.png', sizes: '192x192' }] },
+          ],
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+          navigateFallback: 'index.html',
+          cleanupOutdatedCaches: true,
+          clientsClaim: true,
+          skipWaiting: true,
+          runtimeCaching: [
+            {
+              // font files only (the Google Fonts stylesheet goes straight to the network)
+              urlPattern: ({ url }) => url.origin === 'https://fonts.gstatic.com',
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts',
+                cacheableResponse: { statuses: [0, 200] },
+                expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              },
+            },
+          ],
+        },
+      }),
+    ],
     resolve: {
       alias: { '@': path.resolve(__dirname, './src') },
     },

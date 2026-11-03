@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Wordmark } from '@/components/common/logo'
+import { useDocumentTitle } from '@/hooks/use-document-title'
 
 type AuthLayoutProps = {
   title: string
@@ -10,6 +11,7 @@ type AuthLayoutProps = {
 }
 
 export function AuthLayout({ title, description, children, footer }: AuthLayoutProps) {
+  useDocumentTitle(title)
   return (
     <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-4 py-10">
       {/* soft gold glow */}

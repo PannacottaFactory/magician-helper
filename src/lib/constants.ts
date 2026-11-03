@@ -46,7 +46,7 @@ export const DIFFICULTY_LABELS = ['', 'Easy', 'Intermediate', 'Advanced', 'Exper
 export const STOCK_STATUSES = [
   { value: 'in_stock', label: 'In stock', badge: 'border-success/40 bg-success/10 text-success' },
   { value: 'running_low', label: 'Running low', badge: 'border-warning/50 bg-warning/10 text-warning' },
-  { value: 'out_of_stock', label: 'Out of stock', badge: 'border-destructive/50 bg-destructive/10 text-destructive' },
+  { value: 'out_of_stock', label: 'Out of stock', badge: 'border-destructive/50 bg-destructive/10 text-danger' },
 ] as const
 export type StockStatus = (typeof STOCK_STATUSES)[number]['value']
 

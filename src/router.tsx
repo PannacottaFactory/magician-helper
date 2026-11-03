@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { RouteError } from '@/components/common/route-error'
 import { AppShell } from '@/components/layout/app-shell'
 import { AuthCallbackPage } from '@/features/auth/auth-callback-page'
 import { ForgotPasswordPage } from '@/features/auth/forgot-password-page'
@@ -6,8 +7,8 @@ import { LoginPage } from '@/features/auth/login-page'
 import { ResetPasswordPage } from '@/features/auth/reset-password-page'
 import { RedirectIfAuthenticated, RequireAuth } from '@/features/auth/route-guards'
 import { SignupPage } from '@/features/auth/signup-page'
-import { HomePage } from '@/features/public/home-page'
-import { LegalPlaceholderPage, NotFoundPage } from '@/features/public/simple-pages'
+import { LandingPage } from '@/features/public/landing-page'
+import { NotFoundPage } from '@/features/public/simple-pages'
 
 // Each feature is loaded on demand (code splitting): heavy libraries such as the
 // rich-text editor are only downloaded when their page is opened.
@@ -24,6 +25,7 @@ const gigs = () => import('@/features/gigs/gigs-page')
 const gigDetail = () => import('@/features/gigs/gig-detail')
 const clients = () => import('@/features/clients/clients-page')
 const clientDetail = () => import('@/features/clients/client-detail')
+const legal = () => import('@/features/public/legal-pages')
 const dashboard = () => import('@/features/dashboard/dashboard-page')
 const billing = () => import('@/features/billing/billing-page')
 const settings = () => import('@/features/settings/settings-page')
@@ -32,9 +34,13 @@ const settings = () => import('@/features/settings/settings-page')
 // (a copy of index.html, see scripts/spa-fallback.mjs). `basename` = Vite `base`.
 export const router = createBrowserRouter(
   [
-    { path: '/', element: <HomePage /> },
-    { path: '/privacy', element: <LegalPlaceholderPage title="Privacy Policy" /> },
-    { path: '/terms', element: <LegalPlaceholderPage title="Terms of Service" /> },
+    {
+      // every route shares one error screen (also handles stale code after a deploy)
+      errorElement: <RouteError />,
+      children: [
+    { path: '/', element: <LandingPage /> },
+    { path: '/privacy', lazy: async () => ({ Component: (await legal()).PrivacyPage }) },
+    { path: '/terms', lazy: async () => ({ Component: (await legal()).TermsPage }) },
     { path: '/auth/callback', element: <AuthCallbackPage /> },
     { path: '/reset-password', element: <ResetPasswordPage /> },
     {
@@ -91,6 +97,8 @@ export const router = createBrowserRouter(
       ],
     },
     { path: '*', element: <NotFoundPage /> },
+      ],
+    },
   ],
   { basename: import.meta.env.BASE_URL.replace(/\/$/, '') || '/' },
 )

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Disallow: /magician-helper/app/

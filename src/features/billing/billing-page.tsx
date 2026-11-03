@@ -70,7 +70,7 @@ function describePlan(profile: Profile, now: number): Plan {
   if (status === 'past_due') {
     return {
       label: 'Payment issue',
-      tone: 'border-destructive/50 bg-destructive/10 text-destructive',
+      tone: 'border-destructive/50 bg-destructive/10 text-danger',
       icon: AlertTriangle,
       headline: 'Your last payment failed',
       detail: 'Stripe will retry automatically. Update your card to avoid losing edit access.',

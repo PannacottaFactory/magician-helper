@@ -123,6 +123,13 @@ The secret keys live **only** in Supabase Edge Function secrets — never in the
 
 **Going live**: repeat steps 2–5 with the live secret key (`sk_live_…`) once your Stripe account is activated. VAT (Stripe Tax) is not configured yet.
 
+### 7. Before launch
+
+- **Legal pages**:  and  are **templates** (). Replace every highlighted  and have them reviewed by a professional.
+- **Emails**: plug a real SMTP provider into Supabase (see step 3).
+- **Stripe live mode**: activate your Stripe account, then redo step 6 with the  key.
+- **Install as an app (PWA)**: on Android/Chrome, use *Install app* in the browser menu; on iPhone/Safari, *Share → Add to Home Screen*. The app shell works offline; data needs a connection.
+
 ---
 
 ## Project structure

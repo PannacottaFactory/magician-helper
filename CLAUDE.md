@@ -70,6 +70,9 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - Never call `Date.now()` / `new Date()` for "now" during render (React compiler lint error): use `useNow()` from `src/hooks/use-now.ts`.
 - Gig checklist: a DB trigger on `gig_routines` calls `sync_gig_checklist()`; the UI also offers a Refresh button (routines may change after linking). Floating widgets must carry `data-floating-widget` so clicking them does not close sheets/dialogs.
 - The practice timer lives in `features/practice/timer-store.ts` (localStorage, survives navigation/reload); the floating widget is rendered by `AppShell`.
+- PWA: `vite-plugin-pwa` in `vite.config.ts` (autoUpdate; Supabase data never cached). Icons in `public/icons/`. `RouteError` (root `errorElement`) reloads once when a deploy removed old code chunks.
+- Public pages: `features/public/` (landing with code-drawn mockups, legal templates with [PLACEHOLDERS]). Every page sets its tab title (`PageHeader`/`AuthLayout` do it via `useDocumentTitle`).
+- Small red text uses `text-danger` (AA on dark tinted backgrounds); `destructive` is for buttons/borders. Grids that can contain long text start with `grid-cols-1` (minmax(0,1fr)) to avoid mobile overflow.
 - Colors only through theme tokens (`bg-background`, `text-muted-foreground`, `text-gold`, `border-gold/30`…) defined in `src/styles/globals.css`. Design = **matte black with light gold touches**; gold is an accent, not a fill (use it for active states, icons, highlights, primary buttons).
 - Headings use `font-display` (Cormorant Garamond); body uses Inter.
 - Accessibility: AA contrast, every interactive element keyboard-reachable with visible focus ring, icon-only buttons need `aria-label`, decorative icons `aria-hidden`.
@@ -87,4 +90,4 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - [x] Phase 4 — Clients + Gigs + calendar + prep checklist
 - [x] Phase 5 — Dashboard, global search, export/import
 - [x] Phase 6 — Trial, Stripe, read-only mode, Billing page
-- [ ] Phase 7 — Landing page, PWA, polish, accessibility
+- [x] Phase 7 — Landing page, PWA, polish, accessibility

@@ -213,7 +213,7 @@ function GigListItem({ gig, past }: { gig: GigRow; past: boolean }) {
         </span>
         <span className="flex flex-col items-end gap-1 text-xs">
           {gig.has_stock_alert && !past && (
-            <span className="inline-flex items-center gap-1 text-destructive" title="Some props are missing">
+            <span className="inline-flex items-center gap-1 text-danger" title="Some props are missing">
               <AlertTriangle className="size-3.5" aria-hidden="true" />
               <span className="sr-only sm:not-sr-only">Stock</span>
             </span>

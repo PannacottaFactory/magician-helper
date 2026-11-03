@@ -93,7 +93,7 @@ export function GigChecklist({ gigId }: { gigId: string }) {
 
       {problems.length > 0 && (
         <p className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm" role="status">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden="true" />
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden="true" />
           <span>
             <span className="font-medium">Stock problem: </span>
             {problems.map((p) => `${p.label} (${stockProblem(p)?.toLowerCase()})`).join(', ')}
@@ -125,7 +125,7 @@ export function GigChecklist({ gigId }: { gigId: string }) {
                   {item.quantity_needed > 1 && <span className="text-muted-foreground"> × {item.quantity_needed}</span>}
                 </label>
                 {problem && (
-                  <span className="shrink-0 rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-xs text-destructive">
+                  <span className="shrink-0 rounded-full border border-destructive/40 bg-destructive/10 px-2 py-0.5 text-xs text-danger">
                     {problem}
                   </span>
                 )}

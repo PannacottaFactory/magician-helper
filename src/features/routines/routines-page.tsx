@@ -109,7 +109,7 @@ export function RoutinesPage() {
           {filtered.length === 0 ? (
             <p className="py-12 text-center text-sm text-muted-foreground">No routines match your filters.</p>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((r) => (
                 <Card key={r.id} className="group relative gap-3 p-4 transition-colors hover:border-gold/40">
                   <div className="flex items-start justify-between gap-2">

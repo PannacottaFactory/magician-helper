@@ -168,7 +168,7 @@ function TrickCardContent({ trick }: { trick: TrickRow }) {
 
 export function TrickCards({ tricks }: { tricks: TrickRow[] }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {tricks.map((trick) => (
         <Card key={trick.id} className="group relative gap-3 p-4 transition-colors hover:border-gold/40">
           <div className="flex items-start justify-between gap-2">

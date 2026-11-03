@@ -33,6 +33,7 @@ import { practiceTimer } from '@/features/practice/timer-store'
 import { useProfile } from '@/features/profile/api'
 import { useRoutines } from '@/features/routines/api'
 import { useTricks } from '@/features/tricks/api'
+import { useDocumentTitle } from '@/hooks/use-document-title'
 import { useNow } from '@/hooks/use-now'
 import { formatCurrency, formatDate, formatDayRelative, formatDuration, formatRelative, formatTime, parseDay, todayISO } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -86,6 +87,7 @@ function Empty({ children }: { children: ReactNode }) {
 }
 
 export function DashboardPage() {
+  useDocumentTitle('Dashboard')
   const user = useUser()
   const now = useNow()
   const { data: profile } = useProfile()
@@ -268,7 +270,7 @@ export function DashboardPage() {
             />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Panel title="Upcoming gigs" icon={CalendarDays} to="/app/gigs" linkLabel="All gigs">
               {stats.upcoming.length ? (
                 <ul className="space-y-2">
@@ -295,7 +297,7 @@ export function DashboardPage() {
                             <PaymentBadge status={g.payment_status} />
                             <span className="flex items-center gap-2 text-xs">
                               {g.has_stock_alert && (
-                                <span className="inline-flex items-center gap-1 text-destructive">
+                                <span className="inline-flex items-center gap-1 text-danger">
                                   <AlertTriangle className="size-3" aria-hidden="true" /> Stock
                                 </span>
                               )}

@@ -1,0 +1,132 @@
+// One-shot Stripe setup (test or live mode, depending on the key).
+// Creates — or reuses — the product, the monthly price, the Customer Portal
+// configuration and the webhook endpoint, then writes every secret the Edge
+// Functions need to .env.functions.local (git-ignored).
+//
+// Usage:
+//   1. put STRIPE_SECRET_KEY=sk_test_… in .env.stripe.local
+//   2. node scripts/stripe-setup.mjs
+//   3. npx supabase secrets set --env-file .env.functions.local
+//
+// Settings below can be overridden with environment variables.
+import fs from 'node:fs'
+
+const env = Object.fromEntries(
+  fs
+    .readFileSync('.env.stripe.local', 'utf8')
+    .split(/\r?\n/)
+    .filter((l) => /^[A-Z_]+=/.test(l))
+    .map((l) => [l.slice(0, l.indexOf('=')), l.slice(l.indexOf('=') + 1).trim()]),
+)
+const KEY = env.STRIPE_SECRET_KEY
+if (!KEY?.startsWith('sk_')) {
+  console.error('STRIPE_SECRET_KEY missing in .env.stripe.local (it starts with sk_test_ or sk_live_).')
+  process.exit(1)
+}
+
+const SUPABASE_URL = process.env.SUPABASE_URL ?? 'https://qwgwlkobhvsmuvatfmzi.supabase.co'
+const APP_URL = process.env.APP_URL ?? 'https://pannacottafactory.github.io/magician-helper'
+const PRICE_CENTS = Number(process.env.PRICE_CENTS ?? 999)
+const CURRENCY = process.env.PRICE_CURRENCY ?? 'eur'
+const LOOKUP_KEY = 'magician_helper_monthly'
+const WEBHOOK_URL = `${SUPABASE_URL}/functions/v1/stripe-webhook`
+const EVENTS = [
+  'checkout.session.completed',
+  'customer.subscription.created',
+  'customer.subscription.updated',
+  'customer.subscription.deleted',
+  'customer.subscription.paused',
+  'customer.subscription.resumed',
+  'invoice.paid',
+  'invoice.payment_failed',
+]
+
+/** Minimal Stripe API client (form-encoded, nested params with brackets). */
+async function stripe(method, path, params) {
+  const body = new URLSearchParams()
+  const add = (prefix, value) => {
+    if (value === undefined) return
+    if (Array.isArray(value)) value.forEach((v, i) => add(`${prefix}[${i}]`, v))
+    else if (value !== null && typeof value === 'object') Object.entries(value).forEach(([k, v]) => add(`${prefix}[${k}]`, v))
+    else body.append(prefix, String(value))
+  }
+  Object.entries(params ?? {}).forEach(([k, v]) => add(k, v))
+  const url = `https://api.stripe.com/v1/${path}${method === 'GET' && params ? `?${body}` : ''}`
+  const res = await fetch(url, {
+    method,
+    headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: method === 'GET' ? undefined : body,
+  })
+  const json = await res.json()
+  if (!res.ok) throw new Error(`${method} ${path}: ${json.error?.message ?? res.status}`)
+  return json
+}
+
+const mode = KEY.startsWith('sk_live_') ? 'LIVE' : 'test'
+console.log(`Stripe ${mode} mode`)
+
+// 1. Price (reused through its lookup key) + product
+let price = (await stripe('GET', 'prices', { lookup_keys: [LOOKUP_KEY], active: true, limit: 1 })).data[0]
+if (price && (price.unit_amount !== PRICE_CENTS || price.currency !== CURRENCY)) {
+  console.log('Price changed: creating a new one (the old one is kept for existing subscribers)')
+  price = undefined
+}
+if (!price) {
+  const product = await stripe('POST', 'products', {
+    name: 'Magician Helper',
+    description: 'Repertoire, routines, practice, gigs and props for professional magicians.',
+  })
+  price = await stripe('POST', 'prices', {
+    product: product.id,
+    unit_amount: PRICE_CENTS,
+    currency: CURRENCY,
+    recurring: { interval: 'month' },
+    lookup_key: LOOKUP_KEY,
+    transfer_lookup_key: true,
+    nickname: 'Monthly',
+  })
+  console.log(`Created price ${price.id}`)
+} else console.log(`Reusing price ${price.id}`)
+
+// 2. Customer Portal configuration
+const portal = await stripe('POST', 'billing_portal/configurations', {
+  business_profile: { headline: 'Magician Helper — manage your subscription' },
+  default_return_url: `${APP_URL}/app/billing`,
+  features: {
+    customer_update: { enabled: true, allowed_updates: ['email', 'address', 'tax_id'] },
+    invoice_history: { enabled: true },
+    payment_method_update: { enabled: true },
+    subscription_cancel: { enabled: true, mode: 'at_period_end', cancellation_reason: { enabled: true, options: ['too_expensive', 'missing_features', 'unused', 'other'] } },
+  },
+})
+console.log(`Created portal configuration ${portal.id}`)
+
+// 3. Webhook endpoint (the signing secret is only readable at creation → recreate)
+const endpoints = await stripe('GET', 'webhook_endpoints', { limit: 100 })
+for (const e of endpoints.data.filter((e) => e.url === WEBHOOK_URL)) {
+  await stripe('DELETE', `webhook_endpoints/${e.id}`)
+  console.log(`Removed old webhook ${e.id}`)
+}
+const webhook = await stripe('POST', 'webhook_endpoints', {
+  url: WEBHOOK_URL,
+  enabled_events: EVENTS,
+  description: 'Magician Helper — subscription sync',
+})
+console.log(`Created webhook ${webhook.id} → ${WEBHOOK_URL}`)
+
+// 4. Secrets for the Edge Functions
+fs.writeFileSync(
+  '.env.functions.local',
+  [
+    '# Generated by scripts/stripe-setup.mjs — git-ignored. Upload with:',
+    '#   npx supabase secrets set --env-file .env.functions.local',
+    `STRIPE_SECRET_KEY=${KEY}`,
+    `STRIPE_PRICE_ID=${price.id}`,
+    `STRIPE_WEBHOOK_SECRET=${webhook.secret}`,
+    `STRIPE_PORTAL_CONFIGURATION=${portal.id}`,
+    `APP_URL=${APP_URL}`,
+    'ALLOWED_ORIGINS=http://localhost:5173',
+    '',
+  ].join('\n'),
+)
+console.log('Wrote .env.functions.local')

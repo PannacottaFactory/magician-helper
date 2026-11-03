@@ -2,7 +2,18 @@ import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { FileArchive, FileJson, Loader2, Monitor, Moon, Sun } from 'lucide-react'
+import { FileArchive, FileJson, Loader2, Monitor, Moon, Sun, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { useDeleteAccount } from '@/features/billing/api'
 import { NumberInput } from '@/components/common/number-input'
 import { exportCsvZip, exportJson } from '@/lib/export'
 import { pluralize } from '@/lib/format'
@@ -41,6 +52,7 @@ export function SettingsPage() {
         <PracticeCard />
         <ThemeCard />
         <DataCard />
+        <DangerZoneCard />
       </div>
     </>
   )
@@ -255,6 +267,67 @@ function DataCard() {
           {busy === 'csv' ? <Loader2 className="animate-spin" aria-hidden="true" /> : <FileArchive aria-hidden="true" />}
           Export CSV (zip)
         </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+function DangerZoneCard() {
+  const navigate = useNavigate()
+  const deleteAccount = useDeleteAccount()
+  const [open, setOpen] = useState(false)
+  const [confirm, setConfirm] = useState('')
+
+  async function onDelete() {
+    try {
+      await deleteAccount.mutateAsync()
+      toast.success('Your account and all your data have been deleted.')
+      navigate('/', { replace: true })
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not delete your account.')
+    }
+  }
+
+  return (
+    <Card className="border-destructive/40">
+      <CardHeader>
+        <CardTitle className="text-destructive">Danger zone</CardTitle>
+        <CardDescription>
+          Permanently delete your account and everything in it: tricks, routines, practice, gigs, clients, inventory,
+          photos and ideas. Any subscription is canceled immediately. This cannot be undone — export your data first.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button variant="destructive" onClick={() => setOpen(true)}>
+          <Trash2 aria-hidden="true" /> Delete my account
+        </Button>
+        <AlertDialog
+          open={open}
+          onOpenChange={(o) => {
+            setOpen(o)
+            if (!o) setConfirm('')
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+              <AlertDialogDescription>
+                All your data will be erased permanently. Type <strong>DELETE</strong> to confirm.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <label htmlFor="confirm-delete" className="sr-only">
+              Type DELETE to confirm
+            </label>
+            <Input id="confirm-delete" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" placeholder="DELETE" />
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <Button variant="destructive" disabled={confirm !== 'DELETE' || deleteAccount.isPending} onClick={onDelete}>
+                {deleteAccount.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
+                Delete everything
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   )

@@ -619,6 +619,24 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_events: {
+        Row: {
+          id: string
+          received_at: string
+          type: string
+        }
+        Insert: {
+          id: string
+          received_at?: string
+          type: string
+        }
+        Update: {
+          id?: string
+          received_at?: string
+          type?: string
+        }
+        Relationships: []
+      }
       trick_props: {
         Row: {
           created_at: string
@@ -912,6 +930,17 @@ export type Database = {
       apply_owner_policies: { Args: { tbl: unknown }; Returns: undefined }
       convert_idea_to_trick: { Args: { p_idea_id: string }; Returns: string }
       has_write_access: { Args: never; Returns: boolean }
+      my_access: {
+        Args: never
+        Returns: {
+          can_write: boolean
+          cancel_at_period_end: boolean
+          current_period_end: string
+          on_trial: boolean
+          subscription_status: string
+          trial_ends_at: string
+        }[]
+      }
       reorder_routine_tricks: {
         Args: { p_ids: string[]; p_routine_id: string }
         Returns: undefined

@@ -89,9 +89,39 @@ Every push to `main` builds and publishes the site through GitHub Actions (`.git
 
 **How routing works on GitHub Pages:** GitHub Pages only serves files. Opening `/magician-helper/app/tricks` directly would normally give a 404. The build copies `index.html` to `404.html`, so GitHub serves the app for any unknown path and React Router shows the right page. URLs stay clean (`/app/tricks` rather than `/#/app/tricks`), and Supabase's email links keep working.
 
-### 6. Stripe (phase 6)
+### 6. Payments with Stripe
 
-*Coming in phase 6: test-mode product & price, webhook, Edge Functions deployment and secrets.*
+How it works: the 14-day trial starts at sign-up (no card). The **Subscribe** button calls the Edge Function `create-checkout-session`, which opens Stripe Checkout. If trial days remain, the Stripe subscription starts in `trialing` and the first payment happens when the 14 days are over. Stripe then notifies the `stripe-webhook` function, which updates `profiles.subscription_status`. Without an active subscription after the trial, the database refuses every write: the app becomes read-only (view + export still work).
+
+The secret keys live **only** in Supabase Edge Function secrets — never in the frontend or in Git.
+
+1. **Create a Stripe account** at [dashboard.stripe.com](https://dashboard.stripe.com) and switch on **Test mode** (toggle at the top).
+2. **Copy the test secret key**: Developers → API keys → *Secret key* (`sk_test_…`). Paste it in `.env.stripe.local` at the project root (git-ignored):
+   ```
+   STRIPE_SECRET_KEY=sk_test_…
+   ```
+3. **Create the product, price, portal and webhook automatically**:
+   ```bash
+   node scripts/stripe-setup.mjs
+   ```
+   It creates (or reuses) a *Magician Helper* product with a €9.99/month price (lookup key `magician_helper_monthly`), a Customer Portal configuration (update card, invoices, cancel at period end) and a webhook endpoint pointing to `https://<project-ref>.supabase.co/functions/v1/stripe-webhook`. It writes every secret to `.env.functions.local` (git-ignored).
+   > To change the price later without touching the code: `PRICE_CENTS=1299 node scripts/stripe-setup.mjs`, upload the secrets again, and update the `VITE_PRICE_LABEL` repository variable. Existing subscribers keep their old price.
+4. **Upload the secrets to Supabase**:
+   ```bash
+   npx supabase secrets set --env-file .env.functions.local
+   ```
+5. **Deploy the Edge Functions** (no Docker needed):
+   ```bash
+   npx supabase functions deploy create-checkout-session --use-api
+   npx supabase functions deploy create-portal-session --use-api
+   npx supabase functions deploy delete-account --use-api
+   npx supabase functions deploy stripe-webhook --use-api --no-verify-jwt
+   ```
+   `--no-verify-jwt` is only for the webhook: Stripe has no Supabase token, the function checks the Stripe signature instead.
+6. **Test a payment**: in the app → Billing → Subscribe, use the card `4242 4242 4242 4242`, any future date, any CVC. Back in the app, the status becomes *Subscribed*. Then try **Manage subscription** (Customer Portal) and cancel.
+   Other test cards: `4000 0000 0000 0341` (payment fails later → `past_due`), `4000 0025 0000 3155` (3-D Secure).
+
+**Going live**: repeat steps 2–5 with the live secret key (`sk_live_…`) once your Stripe account is activated. VAT (Stripe Tax) is not configured yet.
 
 ---
 

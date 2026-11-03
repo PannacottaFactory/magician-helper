@@ -37,7 +37,7 @@ End-to-end API tests against the real project live in `scripts/e2e/` (create a t
 - `src/hooks/` — theme, etc.
 - `supabase/migrations/` — SQL migrations (apply with `npx supabase db push --remote`; CLI v3 targets local by default), one per phase, named `YYYYMMDDHHMMSS_name.sql`
 - `supabase/tests/` — SQL tests (RLS, triggers, functions) run by `npm run test:sql`
-- `supabase/functions/` — Edge Functions (phase 6)
+- `supabase/functions/` — Edge Functions (Deno): `create-checkout-session`, `create-portal-session`, `stripe-webhook` (deployed with `--no-verify-jwt`, checks the Stripe signature), `delete-account`; shared code in `_shared/`. Deploy with `npx supabase functions deploy <name> --use-api`. Stripe setup: `scripts/stripe-setup.mjs` (reads `.env.stripe.local`, writes `.env.functions.local`, both git-ignored).
 
 ## Conventions
 
@@ -86,5 +86,5 @@ Trial (14 days, `profiles.trial_ends_at`) or subscription `trialing|active|past_
 - [x] Phase 3 — Routines + Practice Log (+ built-in prop catalog, colored tags)
 - [x] Phase 4 — Clients + Gigs + calendar + prep checklist
 - [x] Phase 5 — Dashboard, global search, export/import
-- [ ] Phase 6 — Trial, Stripe, read-only mode, Billing page
+- [x] Phase 6 — Trial, Stripe, read-only mode, Billing page
 - [ ] Phase 7 — Landing page, PWA, polish, accessibility

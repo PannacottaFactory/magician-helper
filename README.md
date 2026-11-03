@@ -128,6 +128,7 @@ The secret keys live **only** in Supabase Edge Function secrets — never in the
 - **Legal pages**: `/privacy` and `/terms` are **templates** (`src/features/public/legal-pages.tsx`). Replace every highlighted `[FIELD]` and have them reviewed by a professional.
 - **Emails**: plug a real SMTP provider into Supabase (see step 3).
 - **Stripe live mode**: activate your Stripe account, then redo step 6 with the `sk_live_…` key.
+- **Landing screenshots**: after a visible UI change, refresh the pictures of the landing page and the share image: run `npm run build`, then `npx vite preview --port 4173` in another terminal, then `node scripts/screenshots.mjs` (needs `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in the environment; it creates and deletes a temporary demo account) and `node scripts/og-image.mjs`.
 - **Install as an app (PWA)**: on Android/Chrome, use *Install app* in the browser menu; on iPhone/Safari, *Share → Add to Home Screen*. The app shell works offline; data needs a connection.
 
 ---

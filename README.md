@@ -125,9 +125,9 @@ The secret keys live **only** in Supabase Edge Function secrets — never in the
 
 ### 7. Before launch
 
-- **Legal pages**:  and  are **templates** (). Replace every highlighted  and have them reviewed by a professional.
+- **Legal pages**: `/privacy` and `/terms` are **templates** (`src/features/public/legal-pages.tsx`). Replace every highlighted `[FIELD]` and have them reviewed by a professional.
 - **Emails**: plug a real SMTP provider into Supabase (see step 3).
-- **Stripe live mode**: activate your Stripe account, then redo step 6 with the  key.
+- **Stripe live mode**: activate your Stripe account, then redo step 6 with the `sk_live_…` key.
 - **Install as an app (PWA)**: on Android/Chrome, use *Install app* in the browser menu; on iPhone/Safari, *Share → Add to Home Screen*. The app shell works offline; data needs a connection.
 
 ---

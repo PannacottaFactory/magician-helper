@@ -47,7 +47,9 @@ export function PracticeWeekChart({ logs }: { logs: { practiced_on: string; time
           </span>
         ))}
       </div>
-      <table className="sr-only">
+      {/* sr-only on a wrapper: Chrome renders a table caption outside the clipped table box */}
+      <div className="sr-only">
+      <table>
         <caption>Minutes practiced over the last 7 days</caption>
         <thead>
           <tr>
@@ -64,6 +66,7 @@ export function PracticeWeekChart({ logs }: { logs: { practiced_on: string; time
           ))}
         </tbody>
       </table>
+      </div>
     </figure>
   )
 }

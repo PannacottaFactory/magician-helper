@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { env } from '@/lib/env'
 import { cn } from '@/lib/utils'
-import { CardFan, LaptopFrame, PhoneFrame, Reveal } from './landing-visuals'
+import { LaptopFrame, PhoneFrame, Reveal } from './landing-visuals'
 import { PublicLayout } from './public-layout'
 
 const FEATURES = [
@@ -168,7 +168,6 @@ export function LandingPage() {
               alt="A routine on a phone: five tricks in order, total duration and props needed."
               className="absolute right-0 -bottom-14 w-[27%] sm:-right-2"
             />
-            <CardFan className="absolute -bottom-14 -left-3 origin-bottom-left scale-[0.62] sm:-bottom-16 sm:-left-10 sm:scale-90" />
           </div>
         </div>
       </section>

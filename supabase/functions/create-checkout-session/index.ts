@@ -23,9 +23,14 @@ Deno.serve(async (req) => {
 
     // One Stripe customer per user, created on first checkout
     let customerId = profile.stripe_customer_id
-    if (!customerId) {
+    if (customerId) {
+      // customers created before English was enforced
+      await stripe.customers.update(customerId, { preferred_locales: ['en'] })
+    } else {
       const customer = await stripe.customers.create({
         email: user.email,
+        // receipts and Stripe emails in English
+        preferred_locales: ['en'],
         metadata: { user_id: user.id },
       })
       customerId = customer.id
@@ -37,6 +42,7 @@ Deno.serve(async (req) => {
     const base = returnBase(req)
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
+      locale: 'en',
       customer: customerId,
       client_reference_id: user.id,
       line_items: [{ price: PRICE_ID, quantity: 1 }],

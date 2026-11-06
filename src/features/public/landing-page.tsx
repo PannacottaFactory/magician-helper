@@ -3,10 +3,13 @@ import { Link } from 'react-router'
 import {
   ArrowRight,
   CalendarDays,
+  CalendarSync,
   Check,
   ChevronDown,
+  ClipboardList,
   Download,
   EyeOff,
+  FileText,
   Lightbulb,
   ListOrdered,
   Package,
@@ -18,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { env } from '@/lib/env'
 import { cn } from '@/lib/utils'
+import { FAQ, PERFORMERS } from './landing-content'
 import { LaptopFrame, PhoneFrame, Reveal } from './landing-visuals'
 import { PublicLayout } from './public-layout'
 
@@ -47,6 +51,24 @@ const FEATURES = [
     tone: 'bg-sky-500/15 text-sky-700 dark:text-sky-300',
   },
   {
+    icon: FileText,
+    title: 'Quotes and invoices in a click',
+    text: 'Numbered quotes and invoices with your business details, tax and deposit, as clean PDFs. Know at a glance what is sent, accepted and paid.',
+    tone: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
+  },
+  {
+    icon: ClipboardList,
+    title: 'A show sheet for every gig',
+    text: 'Venue, contact, show time, running order and packing list on one printable page — for you and the organizer.',
+    tone: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300',
+  },
+  {
+    icon: CalendarSync,
+    title: 'Your gigs in your calendar',
+    text: 'Subscribe from Google Calendar, Apple Calendar or Outlook and every booking shows up next to the rest of your life.',
+    tone: 'bg-teal-500/15 text-teal-700 dark:text-teal-300',
+  },
+  {
     icon: Package,
     title: 'Never run out of flash paper',
     text: 'Track props and gimmicks with photos, files and stock alerts. Start from a catalog of classic props in one click.',
@@ -57,37 +79,6 @@ const FEATURES = [
     title: 'Catch every idea',
     text: 'A notebook for plots, presentations and patter lines — and a button that turns the good ones into tricks.',
     tone: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
-  },
-]
-
-const FAQ = [
-  {
-    q: 'Do I need a credit card for the free trial?',
-    a: 'No. Sign up with your email and get 14 days of full access. You only enter a card if you decide to subscribe.',
-  },
-  {
-    q: 'What happens when the trial ends?',
-    a: 'Nothing is deleted. Your account becomes read-only: you can still view and export everything. Subscribe at any time to create and edit again.',
-  },
-  {
-    q: 'If I subscribe during the trial, do I lose my free days?',
-    a: 'No. Your first payment is taken when your 14 days are over.',
-  },
-  {
-    q: 'Can I cancel anytime?',
-    a: 'Yes, in two clicks from the Billing page. You keep access until the end of the period you paid for.',
-  },
-  {
-    q: 'Are my secrets safe?',
-    a: 'Your data is private to your account — the database itself refuses any access from other users. Methods are hidden on screen until you tap “Reveal”, and everything travels over encrypted connections.',
-  },
-  {
-    q: 'Does it work on my phone?',
-    a: 'Yes. Magician Helper is designed mobile-first and can be installed on your home screen like an app (iPhone and Android).',
-  },
-  {
-    q: 'Can I bring my existing repertoire?',
-    a: 'Yes. Import your tricks from a CSV file (a spreadsheet export works). And you can export all your data, at any time, in JSON or CSV.',
   },
 ]
 
@@ -140,8 +131,8 @@ export function LandingPage() {
               <em className="text-gold-gradient pr-2 font-medium">organized.</em>
             </h1>
             <p className="mt-8 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              Repertoire, routines, practice, gigs and props — in one elegant place. Spend less time on admin and more
-              time on the craft.
+              The all-in-one app for professional magicians. Repertoire, routines, practice, gigs, clients, props and
+              invoices — in one elegant place. Spend less time on admin and more time on the craft.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -180,7 +171,9 @@ export function LandingPage() {
             <SectionTitle id="features-title">
               Everything backstage, <em className="text-gold-gradient pr-1 font-medium">handled</em>
             </SectionTitle>
-            <p className="mt-5 text-muted-foreground">Built with magicians, for the way you actually work.</p>
+            <p className="mt-5 text-muted-foreground">
+              Built with magicians, for the way you actually work — from the first practice session to the final invoice.
+            </p>
           </Reveal>
           <ul className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map(({ icon: Icon, title, text, tone }, i) => (
@@ -242,6 +235,27 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Who it's for */}
+      <section aria-labelledby="performers-title" className="border-t">
+        <Reveal className="mx-auto max-w-4xl px-4 py-24 text-center sm:px-6 sm:py-28">
+          <Eyebrow center>Made for</Eyebrow>
+          <SectionTitle id="performers-title">
+            Every kind of <em className="text-gold-gradient pr-1 font-medium">performer</em>
+          </SectionTitle>
+          <p className="mx-auto mt-5 max-w-2xl leading-relaxed text-muted-foreground">
+            Whether you work the tables at weddings, headline corporate events, read minds on stage or bring wonder to
+            kids’ birthday parties, Magician Helper adapts to the way you perform.
+          </p>
+          <ul className="mt-10 flex flex-wrap justify-center gap-2.5">
+            {PERFORMERS.map((p) => (
+              <li key={p} className="rounded-full border border-gold/30 bg-card px-4 py-1.5 text-sm">
+                {p}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      </section>
+
       {/* How it works */}
       <section id="how" aria-labelledby="how-title" className="scroll-mt-20 border-t bg-card/40">
         <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-32">
@@ -255,7 +269,7 @@ export function LandingPage() {
             {[
               ['Add your tricks and props', 'Type them in, import a CSV, or pick classic props from the catalog.'],
               ['Build routines and practice', 'Order your setlists and log rehearsals with the timer.'],
-              ['Book gigs and get paid', 'Track fees and deposits, and pack with the auto-generated checklist.'],
+              ['Book gigs and get paid', 'Send quotes and invoices, track deposits, and pack with the auto-generated checklist.'],
             ].map(([title, text], i) => (
               <Reveal as="li" key={title} delay={i * 110} className="rounded-2xl border bg-card p-7">
                 <span className="mb-5 block font-display text-5xl leading-none font-medium text-gold italic" aria-hidden="true">
@@ -299,6 +313,8 @@ export function LandingPage() {
                 'Practice timer, streaks and history',
                 'Gigs, calendar, clients and payments',
                 'Automatic preparation checklists',
+                'Quotes, invoices and show sheets in PDF',
+                'Calendar sync (Google, Apple, Outlook)',
                 'Photos and files for your props',
                 'CSV import and full data export',
               ].map((t) => (

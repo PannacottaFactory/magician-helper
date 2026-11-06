@@ -45,7 +45,7 @@ export function PublicFooter() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-start sm:justify-between sm:px-6">
         <div className="space-y-2">
           <Wordmark />
-          <p className="max-w-xs text-sm text-muted-foreground">The organizer for working magicians: repertoire, routines, practice, gigs and props.</p>
+          <p className="max-w-xs text-sm text-muted-foreground">The app for working magicians: repertoire, routines, practice, gigs, clients, props, quotes and invoices.</p>
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm text-muted-foreground">
           <Link to="/signup" className="hover:text-foreground">Start free trial</Link>

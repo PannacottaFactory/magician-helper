@@ -5,18 +5,25 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // VITE_BASE_PATH = "/magician-helper/" on GitHub Pages, "/" locally or with a custom domain.
-export default defineConfig(({ mode }) => {
+// VITE_SITE_URL = public address of the site (canonical links, Open Graph, sitemap).
+export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const siteUrl = (env.VITE_SITE_URL || 'https://pannacottafactory.github.io/magician-helper/').replace(/\/?$/, '/')
   return {
     base: env.VITE_BASE_PATH || '/',
+    define: { 'import.meta.env.VITE_SITE_URL': JSON.stringify(siteUrl) },
     plugins: [
       react(),
       tailwindcss(),
+      {
+        name: 'site-url',
+        transformIndexHtml: (html) => html.replaceAll('%SITE_URL%', siteUrl),
+      },
       // Installable app (PWA). The app shell is cached for fast start; Supabase
       // data is never cached by the service worker (always fresh and private).
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png', 'robots.txt'],
+        includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
         manifest: {
           name: 'Magician Helper',
           short_name: 'Magician Helper',
@@ -68,8 +75,9 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          // Split big vendor libraries into their own cacheable files
-          manualChunks: {
+          // Split big vendor libraries into their own cacheable files (browser build only;
+          // the server build used by scripts/prerender.mjs keeps them external)
+          manualChunks: isSsrBuild ? undefined : {
             react: ['react', 'react-dom', 'react-router'],
             supabase: ['@supabase/supabase-js'],
             forms: ['react-hook-form', '@hookform/resolvers', 'zod'],

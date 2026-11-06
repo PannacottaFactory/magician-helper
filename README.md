@@ -84,10 +84,12 @@ Every push to `main` builds and publishes the site through GitHub Actions (`.git
    | `VITE_SUPABASE_ANON_KEY` | your anon / publishable key |
 
    These are *variables* (not secrets) because they are public anyway; they end up in the browser bundle.
-   Optional: `VITE_PRICE_LABEL` (defaults to `€9.99/month`) and `VITE_BASE_PATH` (only for a custom domain, set it to `/`).
+   Optional: `VITE_PRICE_LABEL` (defaults to `€9.99/month`), `VITE_BASE_PATH` (only for a custom domain, set it to `/`), `VITE_SITE_URL` (public address, for a custom domain) and `VITE_GOOGLE_SITE_VERIFICATION` (see *Google search* below).
 3. Push to `main` (or **Actions → Deploy to GitHub Pages → Run workflow**). The **Actions** tab shows the progress; the site is live at `https://pannacottafactory.github.io/magician-helper/` after ~1 minute.
 
 **How routing works on GitHub Pages:** GitHub Pages only serves files. Opening `/magician-helper/app/tricks` directly would normally give a 404. The build copies `index.html` to `404.html`, so GitHub serves the app for any unknown path and React Router shows the right page. URLs stay clean (`/app/tricks` rather than `/#/app/tricks`), and Supabase's email links keep working.
+
+**Public pages are prerendered:** after the build, `scripts/prerender.mjs` renders the landing and legal pages to real HTML (`index.html`, `privacy.html`, `terms.html`) with their title, description, canonical link and structured data, and writes `sitemap.xml` and `robots.txt`. Search engines read the text without running JavaScript. Page metadata lives in `src/features/public/seo.ts`.
 
 ### 6. Payments with Stripe
 
@@ -130,6 +132,11 @@ The secret keys live **only** in Supabase Edge Function secrets — never in the
 - **Emails**: plug a real SMTP provider into Supabase (see step 3).
 - **Stripe live mode**: activate your Stripe account, then redo step 6 with the `sk_live_…` key.
 - **Landing screenshots**: after a visible UI change, refresh the pictures of the landing page and the share image: run `npm run build`, then `npx vite preview --port 4173` in another terminal, then `node scripts/screenshots.mjs` (needs `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` in the environment; it creates and deletes a temporary demo account) and `node scripts/og-image.mjs`.
+- **Google search**:
+  1. Open [Google Search Console](https://search.google.com/search-console) → *Add property* → **URL prefix** → `https://pannacottafactory.github.io/magician-helper/` → method **HTML tag**. Copy the `content="…"` value into the repository variable `VITE_GOOGLE_SITE_VERIFICATION`, redeploy, then click *Verify*.
+  2. *Sitemaps* → submit `sitemap.xml`. *URL inspection* → the home page → *Request indexing*.
+  3. Once the legal pages are completed, set `indexable: true` for them in `src/features/public/seo.ts`.
+  4. A custom domain (e.g. `magicianhelper.com`) ranks and looks better than a `github.io` address, and makes `robots.txt` effective (Google only reads it at the root of a domain): add it under **Settings → Pages → Custom domain**, then set the variables `VITE_BASE_PATH=/` and `VITE_SITE_URL=https://your-domain/`.
 - **Install as an app (PWA)**: on Android/Chrome, use *Install app* in the browser menu; on iPhone/Safari, *Share → Add to Home Screen*. The app shell works offline; data needs a connection.
 
 ---

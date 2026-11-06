@@ -36,6 +36,9 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           VITE_PRICE_LABEL: ${{ vars.VITE_PRICE_LABEL }}
+          # Search engines: public address of the site (custom domain) and Google Search Console code
+          VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
+          VITE_GOOGLE_SITE_VERIFICATION: ${{ vars.VITE_GOOGLE_SITE_VERIFICATION }}
           # Site is served from https://<owner>.github.io/<repo>/ — override with a variable for a custom domain ("/")
           VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
 

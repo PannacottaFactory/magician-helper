@@ -4,11 +4,11 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// VITE_BASE_PATH = "/magician-helper/" on GitHub Pages, "/" locally or with a custom domain.
+// VITE_BASE_PATH = "/" (custom domain, local dev); "/<repo>/" on a github.io project site.
 // VITE_SITE_URL = public address of the site (canonical links, Open Graph, sitemap).
 export default defineConfig(({ mode, isSsrBuild }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const siteUrl = (env.VITE_SITE_URL || 'https://pannacottafactory.github.io/magician-helper/').replace(/\/?$/, '/')
+  const siteUrl = (env.VITE_SITE_URL || 'https://magicianhelper.com/').replace(/\/?$/, '/')
   return {
     base: env.VITE_BASE_PATH || '/',
     define: { 'import.meta.env.VITE_SITE_URL': JSON.stringify(siteUrl) },

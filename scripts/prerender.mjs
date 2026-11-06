@@ -69,8 +69,7 @@ for (const page of PUBLIC_PAGES) {
 }
 
 // 3. sitemap.xml and robots.txt
-// Note: Google only reads robots.txt at the root of a domain. On a GitHub Pages
-// project site (…github.io/magician-helper/) submit the sitemap in Search Console.
+// Note: Google only reads robots.txt at the root of a domain (fine with magicianhelper.com).
 const today = new Date().toISOString().slice(0, 10)
 const urls = PUBLIC_PAGES.filter((p) => p.indexable)
   .map((p) => `  <url>\n    <loc>${pageUrl(p.path)}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`)

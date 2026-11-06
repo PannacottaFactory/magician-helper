@@ -39,8 +39,9 @@ jobs:
           # Search engines: public address of the site (custom domain) and Google Search Console code
           VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
           VITE_GOOGLE_SITE_VERIFICATION: ${{ vars.VITE_GOOGLE_SITE_VERIFICATION }}
-          # Site is served from https://<owner>.github.io/<repo>/ — override with a variable for a custom domain ("/")
-          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
+          # Served at the root of the custom domain (magicianhelper.com). Without a custom domain,
+          # set the variable to "/<repo>/" (site at https://<owner>.github.io/<repo>/)
+          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || '/' }}
 
       - uses: actions/configure-pages@v5
 

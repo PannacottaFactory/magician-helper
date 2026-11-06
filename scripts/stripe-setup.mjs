@@ -25,7 +25,7 @@ if (!KEY?.startsWith('sk_')) {
 }
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? 'https://qwgwlkobhvsmuvatfmzi.supabase.co'
-const APP_URL = process.env.APP_URL ?? 'https://pannacottafactory.github.io/magician-helper'
+const APP_URL = process.env.APP_URL ?? 'https://magicianhelper.com'
 const PRICE_CENTS = Number(process.env.PRICE_CENTS ?? 999)
 const CURRENCY = process.env.PRICE_CURRENCY ?? 'eur'
 const LOOKUP_KEY = 'magician_helper_monthly'

@@ -11,7 +11,7 @@ Full plan, SQL design and decisions: [PLAN.md](PLAN.md). Setup guide: [README.md
 - React Router v7 (library mode, `createBrowserRouter`), `basename` = Vite `base`
 - Supabase: Auth (password + magic link, **PKCE flow**), Postgres with RLS, Storage
 - Stripe Checkout + Customer Portal via Supabase Edge Functions (Deno) — phase 6
-- Hosted on GitHub Pages: https://pannacottafactory.github.io/magician-helper/ (deployed by `.github/workflows/deploy.yml` on push to `main`)
+- Hosted on GitHub Pages with the custom domain https://magicianhelper.com/ (DNS at OVH; deployed by `.github/workflows/deploy.yml` on push to `main`)
 
 ## Commands
 

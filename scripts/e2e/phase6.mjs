@@ -48,7 +48,7 @@ try {
   userId = created.user.id
   const { data: session } = await sb.auth.signInWithPassword({ email, password: 'Test-password-123' })
   const token = session.session.access_token
-  const call = (name, body = {}, origin = 'https://pannacottafactory.github.io') =>
+  const call = (name, body = {}, origin = 'https://magicianhelper.com') =>
     fetch(`${url}/functions/v1/${name}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, apikey: anonKey, 'Content-Type': 'application/json', Origin: origin },

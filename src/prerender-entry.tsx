@@ -7,10 +7,12 @@ import { StaticRouter } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/features/auth/auth-provider'
 import { LandingPage } from '@/features/public/landing-page'
+import { GuidePage, GuidesIndexPage } from '@/features/public/guides/guide-pages'
+import { GUIDES, GUIDES_PATH, guidePath } from '@/features/public/guides/guides-meta'
 import { PrivacyPage, TermsPage } from '@/features/public/legal-pages'
 import { env } from '@/lib/env'
 
-export { PUBLIC_PAGES, SITE_URL, landingStructuredData, pageUrl } from '@/features/public/seo'
+export { PUBLIC_PAGES, SITE_URL, pageUrl, structuredData } from '@/features/public/seo'
 export const priceLabel = env.priceLabel
 export const basePath = import.meta.env.BASE_URL
 
@@ -18,6 +20,8 @@ const PAGES: Record<string, ComponentType> = {
   '/': LandingPage,
   '/privacy': PrivacyPage,
   '/terms': TermsPage,
+  [GUIDES_PATH]: GuidesIndexPage,
+  ...Object.fromEntries(GUIDES.map((g) => [guidePath(g.slug), () => <GuidePage slug={g.slug} />])),
 }
 
 export function render(path: string): string {

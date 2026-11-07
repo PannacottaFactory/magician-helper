@@ -1,8 +1,12 @@
-import type { ReactNode } from 'react'
-import { Link } from 'react-router'
+import { useEffect, type ReactNode } from 'react'
+import { Link, useLocation } from 'react-router'
 import { Wordmark } from '@/components/common/logo'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/features/auth/auth-provider'
+import { GUIDES_PATH } from './guides/guides-meta'
+
+// Landing sections: a plain link so it also works from the guide and legal pages
+const home = (hash: string) => `${import.meta.env.BASE_URL}#${hash}`
 
 export function PublicHeader() {
   const { user } = useAuth()
@@ -13,10 +17,10 @@ export function PublicHeader() {
           <Wordmark />
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-          <a href="#features" className="hover:text-foreground">Features</a>
-          <a href="#how" className="hover:text-foreground">How it works</a>
-          <a href="#pricing" className="hover:text-foreground">Pricing</a>
-          <a href="#faq" className="hover:text-foreground">FAQ</a>
+          <a href={home('features')} className="hover:text-foreground">Features</a>
+          <a href={home('pricing')} className="hover:text-foreground">Pricing</a>
+          <Link to={GUIDES_PATH} className="hover:text-foreground">Guides</Link>
+          <a href={home('faq')} className="hover:text-foreground">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
@@ -52,7 +56,7 @@ export function PublicFooter() {
           <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
           <Link to="/login" className="hover:text-foreground">Sign in</Link>
           <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
-          <span aria-hidden="true" />
+          <Link to={GUIDES_PATH} className="hover:text-foreground">Guides for magicians</Link>
           <Link to="/terms#legal-notice" className="hover:text-foreground">Legal notice</Link>
         </nav>
       </div>
@@ -62,6 +66,11 @@ export function PublicFooter() {
 }
 
 export function PublicLayout({ children }: { children: ReactNode }) {
+  const { pathname, hash } = useLocation()
+  // client-side navigation between public pages starts at the top
+  useEffect(() => {
+    if (!hash) window.scrollTo({ top: 0 })
+  }, [pathname, hash])
   return (
     <div className="grain flex min-h-dvh flex-col">
       <a

@@ -26,6 +26,7 @@ const gigDetail = () => import('@/features/gigs/gig-detail')
 const clients = () => import('@/features/clients/clients-page')
 const clientDetail = () => import('@/features/clients/client-detail')
 const legal = () => import('@/features/public/legal-pages')
+const guides = () => import('@/features/public/guides/guide-pages')
 const dashboard = () => import('@/features/dashboard/dashboard-page')
 const billing = () => import('@/features/billing/billing-page')
 const settings = () => import('@/features/settings/settings-page')
@@ -43,6 +44,8 @@ export const router = createBrowserRouter(
     { path: '/', element: <LandingPage /> },
     { path: '/privacy', lazy: async () => ({ Component: (await legal()).PrivacyPage }) },
     { path: '/terms', lazy: async () => ({ Component: (await legal()).TermsPage }) },
+    { path: '/guides', lazy: async () => ({ Component: (await guides()).GuidesIndexPage }) },
+    { path: '/guides/:slug', lazy: async () => ({ Component: (await guides()).GuideRoute }) },
     { path: '/auth/callback', element: <AuthCallbackPage /> },
     { path: '/reset-password', element: <ResetPasswordPage /> },
     {

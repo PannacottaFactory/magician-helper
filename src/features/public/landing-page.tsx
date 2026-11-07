@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { useDocumentTitle } from '@/hooks/use-document-title'
 import { env } from '@/lib/env'
 import { cn } from '@/lib/utils'
+import { GUIDES, GUIDES_PATH, guidePath } from './guides/guides-meta'
 import { FAQ, PERFORMERS } from './landing-content'
 import { LaptopFrame, PhoneFrame, Reveal } from './landing-visuals'
 import { PublicLayout } from './public-layout'
@@ -327,6 +328,39 @@ export function LandingPage() {
               <Link to="/signup">Start free — no card needed</Link>
             </Button>
           </Reveal>
+        </div>
+      </section>
+
+      {/* Guides */}
+      <section aria-labelledby="guides-title" className="border-t">
+        <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 sm:py-28">
+          <Reveal className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-2xl">
+              <Eyebrow>Guides</Eyebrow>
+              <SectionTitle id="guides-title">
+                Run your magic <em className="text-gold-gradient pr-1 font-medium">like a business</em>
+              </SectionTitle>
+            </div>
+            <Link to={GUIDES_PATH} className="text-sm text-gold underline underline-offset-4 hover:text-foreground">
+              All guides
+            </Link>
+          </Reveal>
+          <ul className="mt-12 grid grid-cols-1 gap-x-10 gap-y-2 md:grid-cols-2">
+            {GUIDES.map((g) => (
+              <li key={g.slug}>
+                <Link
+                  to={guidePath(g.slug)}
+                  className="group flex items-center justify-between gap-4 border-b py-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                  <span>
+                    <span className="block text-xs font-semibold tracking-[0.25em] text-gold uppercase">{g.category}</span>
+                    <span className="mt-1 block font-display text-xl leading-snug font-semibold group-hover:text-gold">{g.title}</span>
+                  </span>
+                  <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-gold" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

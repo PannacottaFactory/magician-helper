@@ -5,7 +5,7 @@
 // Run by `npm run build`, after scripts/spa-fallback.mjs (404.html must stay an empty
 // app shell: it serves /app/… and other deep links).
 // Optional env: VITE_GOOGLE_SITE_VERIFICATION (Google Search Console "HTML tag" code).
-import { readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { build, loadEnv } from 'vite'
@@ -20,7 +20,7 @@ await build({
   build: { ssr: 'src/prerender-entry.tsx', outDir: OUT, emptyOutDir: true, copyPublicDir: false },
 })
 const entry = await import(pathToFileURL(path.join(OUT, 'prerender-entry.js')).href)
-const { PUBLIC_PAGES, SITE_URL, basePath, landingStructuredData, pageUrl, priceLabel, render } = entry
+const { PUBLIC_PAGES, SITE_URL, basePath, pageUrl, priceLabel, render, structuredData } = entry
 
 const env = loadEnv('production', process.cwd(), '')
 const verification = env.VITE_GOOGLE_SITE_VERIFICATION?.trim()
@@ -54,16 +54,21 @@ for (const page of PUBLIC_PAGES) {
     html = replaceTag(html, /<meta property="og:description" content="[^"]*" \/>/, `<meta property="og:description" content="${attr(page.description)}" />`)
   }
 
+  const ld = structuredData(page.path, priceLabel)
+  if (ld?.some((d) => d['@type'] === 'Article')) {
+    html = replaceTag(html, /<meta property="og:type" content="[^"]*" \/>/, '<meta property="og:type" content="article" />')
+  }
   const head = [
     `<meta name="robots" content="${page.indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow'}" />`,
     verification && page.path === '/' ? `<meta name="google-site-verification" content="${attr(verification)}" />` : '',
-    page.path === '/' ? `<script type="application/ld+json">${jsonLd(landingStructuredData(priceLabel))}</script>` : '',
+    ld ? `<script type="application/ld+json">${jsonLd(ld)}</script>` : '',
     `<style>.mh-shell [data-prerendered]{display:none}</style>`,
     `<script>(function(){var p=location.pathname.replace(/\\/+$/,'');if(${JSON.stringify(ownPaths)}.indexOf(p)<0)document.documentElement.classList.add('mh-shell')})()</script>`,
   ].filter(Boolean)
   html = html.replace('</head>', `    ${head.join('\n    ')}\n  </head>`)
   html = html.replace('<div id="root"></div>', `<div id="root"><div data-prerendered>${render(page.path)}</div></div>`)
 
+  mkdirSync(path.dirname(path.join(DIST, page.file)), { recursive: true })
   writeFileSync(path.join(DIST, page.file), html)
   console.log(`prerender: dist/${page.file} (${page.path})`)
 }

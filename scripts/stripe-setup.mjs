@@ -19,8 +19,8 @@ const env = Object.fromEntries(
     .map((l) => [l.slice(0, l.indexOf('=')), l.slice(l.indexOf('=') + 1).trim()]),
 )
 const KEY = env.STRIPE_SECRET_KEY
-if (!KEY?.startsWith('sk_')) {
-  console.error('STRIPE_SECRET_KEY missing in .env.stripe.local (it starts with sk_test_ or sk_live_).')
+if (!/^(sk|rk)_(test|live)_/.test(KEY ?? '')) {
+  console.error('STRIPE_SECRET_KEY missing in .env.stripe.local (it starts with sk_test_, sk_live_ or rk_live_).')
   process.exit(1)
 }
 
@@ -62,7 +62,7 @@ async function stripe(method, path, params) {
   return json
 }
 
-const mode = KEY.startsWith('sk_live_') ? 'LIVE' : 'test'
+const mode = KEY.includes('_live_') ? 'LIVE' : 'test'
 console.log(`Stripe ${mode} mode`)
 
 // 1. Price (reused through its lookup key) + product

@@ -6,17 +6,15 @@ import { PublicLayout } from './public-layout'
 
 /*
   Legal pages. Seller: Victor Roudaut, micro-entrepreneur (sole trader) in France.
-  Fields still highlighted with <Placeholder> must be completed before taking payments.
+  TODO before taking real payments: replace "SIRET pending registration" with the SIRET
+  and fill in the consumer mediator (section 12 of the Terms), then set indexable: true
+  for /privacy and /terms in seo.ts.
 */
 
 const LAST_UPDATED = 'November 7, 2026'
 const SELLER = 'Victor Roudaut'
 const ADDRESS = '44k rue Magenta, 21000 Dijon, France'
 const CONTACT = 'thepannacottafactory@gmail.com'
-
-function Placeholder({ children }: { children: ReactNode }) {
-  return <mark className="rounded bg-warning/20 px-1 text-foreground">{children}</mark>
-}
 
 function Email() {
   return (
@@ -52,7 +50,7 @@ export function PrivacyPage() {
       <h2>1. Who we are</h2>
       <ul>
         <li>
-          Controller: {SELLER}, sole trader (micro-entrepreneur), SIRET <Placeholder>[SIRET NUMBER]</Placeholder>
+          Controller: {SELLER}, sole trader (micro-entrepreneur), SIRET pending registration
         </li>
         <li>Address: {ADDRESS}</li>
         <li>
@@ -151,7 +149,7 @@ export function TermsPage() {
       <h2 id="legal-notice">1. Legal notice</h2>
       <ul>
         <li>
-          Publisher and seller: {SELLER}, sole trader (micro-entrepreneur), SIRET <Placeholder>[SIRET NUMBER]</Placeholder>
+          Publisher and seller: {SELLER}, sole trader (micro-entrepreneur), SIRET pending registration
         </li>
         <li>Address: {ADDRESS}</li>
         <li>
@@ -243,8 +241,8 @@ export function TermsPage() {
       <h2>12. Complaints, mediation and governing law</h2>
       <p>
         For any complaint, write to <Email /> first; we answer within 30 days. If you are a consumer and we cannot find
-        a solution, you may refer the dispute free of charge to our consumer mediator:{' '}
-        <Placeholder>[NAME AND WEBSITE OF THE CONSUMER MEDIATOR]</Placeholder>.
+        a solution, you may refer the dispute free of charge to a consumer mediator; the details of our mediator will
+        be published on this page once appointed.
       </p>
       <p>
         These Terms are governed by French law. If you are a consumer, you keep the protection of the mandatory rules of

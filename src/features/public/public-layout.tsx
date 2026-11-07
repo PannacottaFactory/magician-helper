@@ -52,6 +52,8 @@ export function PublicFooter() {
           <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
           <Link to="/login" className="hover:text-foreground">Sign in</Link>
           <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
+          <span aria-hidden="true" />
+          <Link to="/terms#legal-notice" className="hover:text-foreground">Legal notice</Link>
         </nav>
       </div>
       <p className="pb-8 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} Magician Helper. All rights reserved.</p>

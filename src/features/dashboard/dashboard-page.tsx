@@ -16,9 +16,12 @@ import {
   PackageCheck,
   Sparkles,
   Timer,
+  X,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { StockBadge, TrickStatusBadge } from '@/components/common/status-badge'
 import { WriteButton } from '@/components/common/write-button'
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useUser } from '@/features/auth/auth-provider'
@@ -86,6 +89,28 @@ function Empty({ children }: { children: ReactNode }) {
   return <p className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">{children}</p>
 }
 
+/** "Set the stage" guide hidden by the user (remembered on this device). */
+function useOnboardingHidden(userId: string) {
+  const key = `mh:onboarding-hidden:${userId}`
+  const [hidden, setHidden] = useState(() => {
+    try {
+      return localStorage.getItem(key) === '1'
+    } catch {
+      return false
+    }
+  })
+  const update = (value: boolean) => {
+    setHidden(value)
+    try {
+      if (value) localStorage.setItem(key, '1')
+      else localStorage.removeItem(key)
+    } catch {
+      // storage unavailable: hidden for this visit only
+    }
+  }
+  return [hidden, update] as const
+}
+
 export function DashboardPage() {
   useDocumentTitle('Dashboard')
   const user = useUser()
@@ -98,6 +123,7 @@ export function DashboardPage() {
   const routinesQ = useRoutines()
   const [logging, setLogging] = useState(false)
   const [booking, setBooking] = useState(false)
+  const [onboardingHidden, setOnboardingHidden] = useOnboardingHidden(user.id)
 
   const currency = profile?.currency ?? 'EUR'
   const gigs = gigsQ.data ?? NONE
@@ -165,7 +191,12 @@ export function DashboardPage() {
     { done: routines.length > 0, label: 'Build a routine', hint: 'Order tricks into a setlist', to: '/app/routines', icon: ListOrdered },
     { done: gigs.length > 0, label: 'Book a gig', hint: 'Get your preparation checklist', to: '/app/gigs', icon: CalendarDays },
   ]
-  const onboarding = !loading && steps.some((s) => !s.done)
+  const onboarding = !loading && !onboardingHidden && steps.some((s) => !s.done)
+
+  const hideOnboarding = () => {
+    setOnboardingHidden(true)
+    toast('Guide hidden', { action: { label: 'Undo', onClick: () => setOnboardingHidden(false) } })
+  }
 
   return (
     <>
@@ -192,11 +223,16 @@ export function DashboardPage() {
 
       {onboarding && (
         <Card className="mb-6 gap-4 border-gold/30 bg-gradient-to-br from-accent/60 to-card p-5">
-          <div>
-            <h2 className="font-display text-xl font-semibold">Set the stage</h2>
-            <p className="text-sm text-muted-foreground">
-              Four steps to get the most out of Magician Helper — {steps.filter((s) => s.done).length} of 4 done.
-            </p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="font-display text-xl font-semibold">Set the stage</h2>
+              <p className="text-sm text-muted-foreground">
+                Four steps to get the most out of Magician Helper — {steps.filter((s) => s.done).length} of 4 done.
+              </p>
+            </div>
+            <Button variant="ghost" size="sm" className="-mt-1 -mr-2 shrink-0 text-muted-foreground" onClick={hideOnboarding}>
+              <X aria-hidden="true" /> Don't show again
+            </Button>
           </div>
           <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((step, i) => (

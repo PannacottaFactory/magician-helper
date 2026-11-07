@@ -51,7 +51,14 @@ In Supabase → **Authentication**:
 
    Email links (confirmation, magic link, password reset) only redirect to URLs in this list.
 2. **Sign In / Providers → Email**: enabled (default). Keep **Confirm email** on for production. You can turn it off while testing to sign up instantly.
-3. **Emails (SMTP)**: the built-in email sender is limited to a few emails per hour and meant for testing only. Before launch, plug in a real SMTP provider (e.g. [Resend](https://resend.com), free tier) under **Authentication → Emails → SMTP Settings**.
+3. **Emails (SMTP)**: the built-in email sender is limited to a few emails per hour and meant for testing only. Emails are sent through [Resend](https://resend.com) (domain `magicianhelper.com` verified with DNS records at OVH): **Authentication → Emails → SMTP Settings** → host `smtp.resend.com`, port `465`, user `resend`, password = a Resend API key (*Sending access*), sender `no-reply@magicianhelper.com` / `Magician Helper`.
+4. **Email templates**: in **Authentication → Emails → Templates**, paste the HTML of each file from `supabase/templates/` (black and gold, English) with its subject:
+   | Template | File | Subject |
+   |---|---|---|
+   | Confirm signup | `confirmation.html` | Confirm your email — Magician Helper |
+   | Magic link | `magic_link.html` | Your sign-in link — Magician Helper |
+   | Reset password | `recovery.html` | Reset your password — Magician Helper |
+   | Change email address | `email_change.html` | Confirm your new email — Magician Helper |
 
 > The app uses the **PKCE** flow: a link sent by email must be opened **in the same browser** where it was requested.
 
@@ -124,7 +131,7 @@ The secret keys live **only** in Supabase Edge Function secrets — never in the
 6. **Test a payment**: in the app → Billing → Subscribe, use the card `4242 4242 4242 4242`, any future date, any CVC. Back in the app, the status becomes *Subscribed*. Then try **Manage subscription** (Customer Portal) and cancel.
    Other test cards: `4000 0000 0000 0341` (payment fails later → `past_due`), `4000 0025 0000 3155` (3-D Secure).
 
-**Going live**: repeat steps 2–5 with the live secret key (`sk_live_…`) once your Stripe account is activated. VAT (Stripe Tax) is not configured yet.
+**Going live**: repeat steps 2–5 with the live secret key (`sk_live_…`) once your Stripe account is activated (switch the dashboard out of Test mode to see the live data). Accounts that subscribed in test mode keep a test customer id and cannot pay in live mode: delete them (Settings → Delete account) or use a new account. VAT (Stripe Tax) is not configured yet.
 
 ### 7. Before launch
 

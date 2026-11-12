@@ -77,7 +77,12 @@ function parsePrice(label: string): { price: string; currency: string } | null {
   return { price: amount.replace(',', '.'), currency: CURRENCIES[symbol] }
 }
 
-const ORGANIZATION = { '@type': 'Organization', name: SITE_NAME, url: SITE_URL }
+const ORGANIZATION = {
+  '@type': 'Organization',
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}icons/icon-512.png`,
+}
 
 function breadcrumbs(items: [name: string, path: string][]) {
   return {
@@ -137,6 +142,7 @@ function landingStructuredData(priceLabel: string) {
       name: SITE_NAME,
       url: SITE_URL,
     },
+    { '@context': 'https://schema.org', ...ORGANIZATION },
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',

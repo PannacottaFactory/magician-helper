@@ -23,7 +23,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       // data is never cached by the service worker (always fresh and private).
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+        includeAssets: ['favicon.svg', 'favicon.ico', 'favicon-96x96.png', 'icons/apple-touch-icon.png'],
         manifest: {
           name: 'Magician Helper',
           short_name: 'Magician Helper',

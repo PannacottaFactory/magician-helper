@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { TRICKS_TEMPLATE_URL } from '@/lib/constants'
 import { dbErrorMessage } from '@/lib/db'
 import { pluralize } from '@/lib/format'
 import { supabase } from '@/lib/supabase'
 import { trickKeys, useTricks } from './api'
-import { parseTricksCsv, templateCsv, type ParsedRow } from './import-csv'
+import { parseTricksCsv, type ParsedRow } from './import-csv'
 
 export function ImportTricksDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const queryClient = useQueryClient()
@@ -45,15 +46,6 @@ export function ImportTricksDialog({ open, onOpenChange }: { open: boolean; onOp
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Could not read this file.')
     }
-  }
-
-  function downloadTemplate() {
-    const url = URL.createObjectURL(new Blob([templateCsv()], { type: 'text/csv' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'magician-helper-tricks-template.csv'
-    a.click()
-    setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
   async function onImport() {
@@ -92,8 +84,10 @@ export function ImportTricksDialog({ open, onOpenChange }: { open: boolean; onOp
         </DialogHeader>
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button variant="outline" onClick={downloadTemplate}>
-            <Download aria-hidden="true" /> Download template
+          <Button asChild variant="outline">
+            <a href={TRICKS_TEMPLATE_URL} download>
+              <Download aria-hidden="true" /> Download template
+            </a>
           </Button>
           <input
             ref={inputRef}

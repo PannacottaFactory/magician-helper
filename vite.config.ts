@@ -51,6 +51,8 @@ export default defineConfig(({ mode, isSsrBuild }) => {
           // the PDF library is large and only needed when generating a PDF (fetched on demand)
           globIgnores: ['**/react-pdf*.js'],
           navigateFallback: 'index.html',
+          // static files opened directly (CSV template, sitemap, robots.txt, llms.txt) must reach the server
+          navigateFallbackDenylist: [/\.(csv|txt|xml)$/],
           cleanupOutdatedCaches: true,
           clientsClaim: true,
           skipWaiting: true,

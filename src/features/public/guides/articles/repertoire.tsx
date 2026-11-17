@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { GuideLink, GuideTable, Tip } from '../guide-ui'
 
 export function RepertoireGuide() {
@@ -102,6 +103,12 @@ export function RepertoireGuide() {
           ['Dedicated app', 'Statuses, filters, props, setlists linked together', 'A subscription'],
         ]}
       />
+
+      <p>
+        Starting with a spreadsheet? Use the{' '}
+        <GuideLink slug="magic-trick-list-template">free magic trick list template</GuideLink>: it has these fields as
+        columns and imports into a <Link to="/magic-trick-organizer">magic trick organizer</Link> when you outgrow it.
+      </p>
 
       <h2 id="review">Review it once a month</h2>
       <p>

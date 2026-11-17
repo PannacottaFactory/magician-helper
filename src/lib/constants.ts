@@ -135,3 +135,6 @@ export const CURRENCIES = [
   { value: 'PLN', label: 'Polish złoty (zł)' },
   { value: 'BRL', label: 'Brazilian real (R$)' },
 ] as const
+
+/** CSV template for the tricks import (public file, also offered by the trick list template guide). */
+export const TRICKS_TEMPLATE_URL = `${import.meta.env.BASE_URL}templates/magic-trick-list-template.csv`

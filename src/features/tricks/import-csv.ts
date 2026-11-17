@@ -46,39 +46,6 @@ const splitList = (s: string) =>
     .map((x) => x.trim())
     .filter(Boolean)
 
-export const TEMPLATE_HEADERS = [
-  'name',
-  'effect',
-  'secret_and_setup',
-  'categories',
-  'difficulty',
-  'duration_min',
-  'status',
-  'tags',
-  'video_url',
-  'references',
-  'other_props',
-  'notes',
-]
-
-export function templateCsv() {
-  const example = [
-    'Ambitious Card',
-    'A signed card keeps rising to the top of the deck.',
-    'Double lift, tilt, side steal.',
-    'Card; Close-up',
-    '2',
-    '5',
-    'Performance-ready',
-    'Opener; Walkaround',
-    'https://www.youtube.com/watch?v=…',
-    'Royal Road to Card Magic',
-    'Sharpie',
-    '',
-  ]
-  return '﻿' + Papa.unparse({ fields: TEMPLATE_HEADERS, data: [example] })
-}
-
 function parseRow(raw: Record<string, string>, line: number): ParsedRow {
   const errors: string[] = []
   const warnings: string[] = []

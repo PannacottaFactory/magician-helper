@@ -66,8 +66,8 @@ export function GuidesIndexPage() {
             Guides for <em className="text-gold-gradient pr-1 font-medium">working magicians</em>
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Practical advice for the business and the craft: pricing your shows, invoicing, organizing your repertoire,
-            practicing, building setlists and preparing every gig.
+            Practical advice for the business and the craft: organizing your repertoire, a free trick list template,
+            practicing, building setlists, pricing and invoicing your shows and preparing every gig.
           </p>
         </header>
         <ul className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

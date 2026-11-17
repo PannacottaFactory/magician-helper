@@ -10,6 +10,8 @@ import { LandingPage } from '@/features/public/landing-page'
 import { GuidePage, GuidesIndexPage } from '@/features/public/guides/guide-pages'
 import { GUIDES, GUIDES_PATH, guidePath } from '@/features/public/guides/guides-meta'
 import { PrivacyPage, TermsPage } from '@/features/public/legal-pages'
+import { OrganizerPage } from '@/features/public/organizer-page'
+import { ORGANIZER_PATH } from '@/features/public/seo'
 import { env } from '@/lib/env'
 
 export { PUBLIC_PAGES, SITE_URL, pageUrl, structuredData } from '@/features/public/seo'
@@ -20,6 +22,7 @@ const PAGES: Record<string, ComponentType> = {
   '/': LandingPage,
   '/privacy': PrivacyPage,
   '/terms': TermsPage,
+  [ORGANIZER_PATH]: OrganizerPage,
   [GUIDES_PATH]: GuidesIndexPage,
   ...Object.fromEntries(GUIDES.map((g) => [guidePath(g.slug), () => <GuidePage slug={g.slug} />])),
 }

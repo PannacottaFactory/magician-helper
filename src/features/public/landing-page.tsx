@@ -25,12 +25,13 @@ import { GUIDES, GUIDES_PATH, guidePath } from './guides/guides-meta'
 import { FAQ, PERFORMERS } from './landing-content'
 import { LaptopFrame, PhoneFrame, Reveal } from './landing-visuals'
 import { PublicLayout } from './public-layout'
+import { ORGANIZER_PATH } from './seo'
 
 const FEATURES = [
   {
     icon: Sparkles,
     title: 'Your repertoire, finally in one place',
-    text: 'Effects, secrets hidden until you reveal them, difficulty, duration, props and video references. Table, cards or kanban.',
+    text: 'Catalog every trick: effects, secrets hidden until you reveal them, difficulty, duration, props and video references. Table, cards or kanban.',
     tone: 'bg-gold/15 text-gold',
   },
   {
@@ -84,7 +85,7 @@ const FEATURES = [
 ]
 
 /** Small spaced-out label above a section title, with a gold hairline. */
-function Eyebrow({ children, center }: { children: ReactNode; center?: boolean }) {
+export function Eyebrow({ children, center }: { children: ReactNode; center?: boolean }) {
   return (
     <p className={cn('mb-5 flex items-center gap-3 text-xs font-semibold tracking-[0.3em] text-gold-deep uppercase dark:text-gold', center && 'justify-center')}>
       <span aria-hidden="true" className="h-px w-8 bg-gold/60" />
@@ -94,7 +95,7 @@ function Eyebrow({ children, center }: { children: ReactNode; center?: boolean }
   )
 }
 
-function SectionTitle({ id, children, className }: { id?: string; children: ReactNode; className?: string }) {
+export function SectionTitle({ id, children, className }: { id?: string; children: ReactNode; className?: string }) {
   return (
     <h2 id={id} className={cn('font-display text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-5xl', className)}>
       {children}
@@ -102,7 +103,7 @@ function SectionTitle({ id, children, className }: { id?: string; children: Reac
   )
 }
 
-function CheckList({ items }: { items: string[] }) {
+export function CheckList({ items }: { items: string[] }) {
   return (
     <ul className="mt-8 space-y-3 text-sm">
       {items.map((t) => (
@@ -125,15 +126,16 @@ export function LandingPage() {
         <div aria-hidden="true" className="pointer-events-none absolute -top-72 left-1/2 size-[820px] -translate-x-1/2 rounded-full bg-gold/10 blur-3xl" />
         <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 px-4 pt-16 pb-24 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:pt-24 lg:pb-32">
           <div className="animate-in fade-in-0 slide-in-from-bottom-3 duration-700">
-            <Eyebrow>For working magicians</Eyebrow>
+            <Eyebrow>The app for magicians</Eyebrow>
             <h1 className="font-display text-6xl leading-[0.95] font-semibold tracking-tight sm:text-7xl lg:text-[5.5rem]">
               Your magic,
               <br />
               <em className="text-gold-gradient pr-2 font-medium">organized.</em>
             </h1>
             <p className="mt-8 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              The all-in-one app for professional magicians. Repertoire, routines, practice, gigs, clients, props and
-              invoices — in one elegant place. Spend less time on admin and more time on the craft.
+              The all-in-one app for magicians: a magic trick organizer for your repertoire, plus routines, practice,
+              gigs, clients, props and invoices — in one elegant place. Spend less time on admin and more time on the
+              craft.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg">
@@ -205,6 +207,9 @@ export function LandingPage() {
               tags make your whole repertoire readable in seconds.
             </p>
             <CheckList items={['Table, cards or kanban views', 'Filters by status, category and tag', 'Secrets hidden until you reveal them']} />
+            <Link to={ORGANIZER_PATH} className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-gold underline-offset-4 hover:underline">
+              More about the magic trick organizer <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
           </Reveal>
           <Reveal delay={150}>
             <LaptopFrame

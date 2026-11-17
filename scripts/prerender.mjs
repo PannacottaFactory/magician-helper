@@ -1,6 +1,6 @@
 // Prerenders the public pages (landing, legal) into real HTML files after `vite build`,
 // so search engines get the full text, a canonical URL and structured data without
-// running JavaScript. Also writes sitemap.xml and robots.txt.
+// running JavaScript. Also writes sitemap.xml, robots.txt and llms.txt.
 //
 // Run by `npm run build`, after scripts/spa-fallback.mjs (404.html must stay an empty
 // app shell: it serves /app/… and other deep links).
@@ -77,14 +77,40 @@ for (const page of PUBLIC_PAGES) {
 // Note: Google only reads robots.txt at the root of a domain (fine with magicianhelper.com).
 const today = new Date().toISOString().slice(0, 10)
 const urls = PUBLIC_PAGES.filter((p) => p.indexable)
-  .map((p) => `  <url>\n    <loc>${pageUrl(p.path)}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`)
+  .map((p) => `  <url>\n    <loc>${pageUrl(p.path)}</loc>\n    <lastmod>${p.updated ?? today}</lastmod>\n  </url>`)
   .join('\n')
 writeFileSync(
   path.join(DIST, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
 )
 writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: ${basePath}app/\n\nSitemap: ${SITE_URL}sitemap.xml\n`)
-console.log('prerender: dist/sitemap.xml, dist/robots.txt')
+
+// llms.txt (llmstxt.org): a plain summary of the site for AI search assistants
+const indexable = PUBLIC_PAGES.filter((p) => p.indexable)
+const isGuide = (p) => p.path.startsWith('/guides/') && p.path !== '/guides/'
+const link = (p) => `- [${p.title.replace(/ · Magician Helper$/, '')}](${pageUrl(p.path)}): ${p.description}`
+writeFileSync(
+  path.join(DIST, 'llms.txt'),
+  [
+    '# Magician Helper',
+    '',
+    `> ${indexable[0].description}`,
+    '',
+    'Magician Helper (also searched as "Magic Helper") is a web app for magicians, mentalists and illusionists, installable on iPhone and Android. It covers: a magic trick organizer (repertoire database with effects, hidden methods, status, categories, tags, props, durations, videos, CSV import), routines and setlists with total running time, a practice log with timer and streaks, a gig calendar with clients, fees and deposits, automatic prop packing checklists, numbered quotes and invoices in PDF, show sheets, calendar sync (Google, Apple, Outlook), a props and gimmicks inventory and an ideas notebook. Data is private to each account; full export in JSON or CSV.',
+    '',
+    `Pricing: 14-day free trial without a credit card, then ${priceLabel}. Sign up: ${pageUrl('/signup')}`,
+    '',
+    '## Pages',
+    '',
+    ...indexable.filter((p) => !isGuide(p)).map(link),
+    '',
+    '## Guides',
+    '',
+    ...indexable.filter(isGuide).map(link),
+    '',
+  ].join('\n'),
+)
+console.log('prerender: dist/sitemap.xml, dist/robots.txt, dist/llms.txt')
 
 rmSync(OUT, { recursive: true, force: true })
 // the Supabase client created at import time may keep the process alive

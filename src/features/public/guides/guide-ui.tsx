@@ -60,6 +60,6 @@ export const PROSE = cn(
   '[&_h3]:mt-9 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground',
   '[&_ul]:space-y-2 [&_ul]:pl-5 [&_ul>li]:list-disc [&_ol]:space-y-2 [&_ol]:pl-5 [&_ol>li]:list-decimal [&_li]:pl-1 [&_li]:marker:text-gold',
   '[&_strong]:font-semibold [&_strong]:text-foreground',
-  '[&_a]:text-gold [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-foreground',
-  '[&_.not-prose_a]:no-underline',
+  // links in the text only: buttons and boxes marked `not-prose` keep their own colors
+  '[&_a:not(.not-prose_a)]:text-gold [&_a:not(.not-prose_a)]:underline [&_a:not(.not-prose_a)]:underline-offset-4 [&_a:not(.not-prose_a):hover]:text-foreground',
 )

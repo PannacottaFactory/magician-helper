@@ -2,10 +2,15 @@
 // by scripts/prerender.mjs, which writes a real HTML file for each page at build
 // time (Google then sees the text without running JavaScript).
 import { GUIDES, GUIDES_PATH, findGuide, guidePath } from './guides/guides-meta'
-import { FAQ } from './landing-content'
+import { FAQ, ORGANIZER_FAQ } from './landing-content'
 
 export const SITE_NAME = 'Magician Helper'
-export const DEFAULT_TITLE = `${SITE_NAME} — The app for professional magicians`
+export const DEFAULT_TITLE = `${SITE_NAME} — Magic Trick Organizer & App for Magicians`
+
+/** Other names people type to find the app (schema.org alternateName). */
+export const ALTERNATE_NAMES = ['Magic Helper', 'MagicianHelper', 'Magician Helper app']
+
+export const ORGANIZER_PATH = '/magic-trick-organizer'
 
 /** Absolute URL of the public site, with a trailing slash (set by VITE_SITE_URL, see vite.config.ts). */
 export const SITE_URL: string = String(import.meta.env.VITE_SITE_URL).replace(/\/?$/, '/')
@@ -19,6 +24,8 @@ export type PublicPageMeta = {
   description: string
   /** false = "noindex" and left out of the sitemap */
   indexable: boolean
+  /** ISO date of the last content change (sitemap lastmod); build date when absent */
+  updated?: string
 }
 
 export const PUBLIC_PAGES: PublicPageMeta[] = [
@@ -27,8 +34,17 @@ export const PUBLIC_PAGES: PublicPageMeta[] = [
     file: 'index.html',
     title: DEFAULT_TITLE,
     description:
-      'The all-in-one app for magicians: organize your repertoire, routines and practice, book gigs, manage clients and props, send quotes and invoices. Free 14-day trial.',
+      'The magic trick organizer and all-in-one app for magicians: catalog your repertoire, build routines, log practice, book gigs and send invoices. Free 14-day trial.',
     indexable: true,
+  },
+  {
+    path: ORGANIZER_PATH,
+    file: 'magic-trick-organizer.html',
+    title: `Magic Trick Organizer: Catalog Every Trick You Know · ${SITE_NAME}`,
+    description:
+      'Catalog your magic tricks in one private database: effect, hidden method, status, props, duration and video. Table, cards or kanban, CSV import. Free 14-day trial.',
+    indexable: true,
+    updated: '2026-11-17',
   },
   // The legal pages are still templates with [PLACEHOLDERS]: switch `indexable`
   // to true once they are completed.
@@ -51,7 +67,7 @@ export const PUBLIC_PAGES: PublicPageMeta[] = [
     file: 'guides/index.html',
     title: `Guides for magicians · ${SITE_NAME}`,
     description:
-      'Practical guides for working magicians: pricing and invoicing your shows, organizing your repertoire, practicing, building setlists and preparing every gig.',
+      'Practical guides for working magicians: organizing and cataloging your tricks, a free trick list template, practicing, setlists, pricing, invoicing and preparing every gig.',
     indexable: true,
   },
   ...GUIDES.map((g) => ({
@@ -60,6 +76,7 @@ export const PUBLIC_PAGES: PublicPageMeta[] = [
     title: `${g.title} · ${SITE_NAME}`,
     description: g.description,
     indexable: true,
+    updated: g.updated,
   })),
 ]
 
@@ -80,6 +97,7 @@ function parsePrice(label: string): { price: string; currency: string } | null {
 const ORGANIZATION = {
   '@type': 'Organization',
   name: SITE_NAME,
+  alternateName: ALTERNATE_NAMES,
   url: SITE_URL,
   logo: `${SITE_URL}icons/icon-512.png`,
 }
@@ -95,6 +113,23 @@ function breadcrumbs(items: [name: string, path: string][]) {
 /** schema.org data (JSON-LD) for a public page, or null when it has none. */
 export function structuredData(path: string, priceLabel: string): object[] | null {
   if (path === '/') return landingStructuredData(priceLabel)
+  if (path === ORGANIZER_PATH) {
+    const page = PUBLIC_PAGES.find((p) => p.path === ORGANIZER_PATH)!
+    return [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: page.title,
+        description: page.description,
+        url: pageUrl(path),
+        image: `${SITE_URL}landing/tricks-kanban-desktop.webp`,
+        about: { '@type': 'SoftwareApplication', name: SITE_NAME, url: SITE_URL },
+        inLanguage: 'en',
+      },
+      faqPage(ORGANIZER_FAQ),
+      breadcrumbs([['Home', '/'], ['Magic trick organizer', path]]),
+    ]
+  }
   if (path === GUIDES_PATH) {
     return [
       {
@@ -140,6 +175,7 @@ function landingStructuredData(priceLabel: string) {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: SITE_NAME,
+      alternateName: ALTERNATE_NAMES,
       url: SITE_URL,
     },
     { '@context': 'https://schema.org', ...ORGANIZATION },
@@ -147,10 +183,15 @@ function landingStructuredData(priceLabel: string) {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
       name: SITE_NAME,
+      alternateName: ALTERNATE_NAMES,
       url: SITE_URL,
       image: `${SITE_URL}og-image.jpg`,
+      screenshot: ['dashboard-desktop.webp', 'tricks-kanban-desktop.webp'].map((f) => `${SITE_URL}landing/${f}`),
       description: PUBLIC_PAGES[0].description,
       applicationCategory: 'BusinessApplication',
+      applicationSubCategory: 'Magic trick organizer and booking software for magicians',
+      keywords:
+        'magic trick organizer, magic repertoire app, magic trick database, app for magicians, magician software, magic setlist, magic practice log, magician booking, magician invoice, magic helper',
       operatingSystem: 'Web, iOS, Android',
       audience: { '@type': 'Audience', audienceType: 'Magicians, mentalists and illusionists' },
       featureList: [
@@ -173,14 +214,18 @@ function landingStructuredData(priceLabel: string) {
         },
       }),
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: FAQ.map(({ q, a }) => ({
-        '@type': 'Question',
-        name: q,
-        acceptedAnswer: { '@type': 'Answer', text: a },
-      })),
-    },
+    faqPage(FAQ),
   ]
+}
+
+function faqPage(items: { q: string; a: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  }
 }

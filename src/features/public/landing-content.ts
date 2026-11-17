@@ -2,6 +2,10 @@
 
 export const FAQ = [
   {
+    q: 'What is Magician Helper?',
+    a: 'Magician Helper is a magic helper app for performers: a magic trick organizer and repertoire database, a setlist builder, a practice log, a gig calendar with clients, and simple quotes and invoices — in one place. It runs in your browser and installs on iPhone and Android.',
+  },
+  {
     q: 'Who is Magician Helper for?',
     a: 'Working and aspiring magicians: close-up and table-hopping performers, mentalists, stage and illusion acts, children’s entertainers, wedding and corporate magicians. If you perform magic and want your repertoire, gigs and paperwork in one place, it is for you.',
   },
@@ -53,4 +57,32 @@ export const PERFORMERS = [
   'Corporate entertainers',
   'Street performers',
   'Magic hobbyists',
+]
+
+/** FAQ of the magic trick organizer page (also its FAQPage structured data). */
+export const ORGANIZER_FAQ = [
+  {
+    q: 'What is the best way to catalog magic tricks?',
+    a: 'Give every trick the same short record: name, effect, method, category, status, duration, props and source. A dedicated magic trick organizer like Magician Helper keeps that structure for you, lets you filter by status or tag, and hides methods on screen.',
+  },
+  {
+    q: 'Can I import my trick list from a spreadsheet?',
+    a: 'Yes. Export your sheet as CSV (Excel, Google Sheets and Numbers all can) and import it. Columns such as name, effect, method, category, status, tags and props are recognized automatically, and every row is checked before anything is saved.',
+  },
+  {
+    q: 'Are my methods and secrets private?',
+    a: 'Yes. Your repertoire is visible only to your account — the database refuses access from any other user — and methods stay hidden on screen until you tap “Reveal”, so you can open the app in front of people.',
+  },
+  {
+    q: 'Does the trick organizer work on my phone?',
+    a: 'Yes. Magician Helper is mobile-first and installs on your home screen like an app on iPhone and Android, so your repertoire is in your pocket at every gig.',
+  },
+  {
+    q: 'Can I organize mentalism, stage and kids’ material too?',
+    a: 'Yes. Categories cover cards, coins, mentalism, close-up and stage, and free tags let you mark anything else: kids-friendly, walk-around, no table, opener, closer, signature piece.',
+  },
+  {
+    q: 'Can I get my data out?',
+    a: 'At any time, in JSON or CSV, even after your trial ends. Your repertoire is yours.',
+  },
 ]

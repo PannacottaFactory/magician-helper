@@ -27,6 +27,36 @@ export function guidePath(slug: string): string {
 
 export const GUIDES: GuideMeta[] = [
   {
+    slug: 'magic-trick-list-template',
+    title: 'Free Magic Trick List Template (Spreadsheet & CSV)',
+    shortTitle: 'Trick list template',
+    description:
+      'Download a free magic trick list template for Excel, Google Sheets or Numbers: the columns every trick needs, statuses, tags and how to import it into an organizer.',
+    category: 'Repertoire',
+    published: '2026-11-17',
+    updated: '2026-11-17',
+    readingMinutes: 5,
+    cta: {
+      title: 'From spreadsheet to organizer in one import',
+      text: 'Import this template into Magician Helper: methods hidden until you reveal them, a kanban board by status, setlists with running time and gigs with a packing list.',
+    },
+  },
+  {
+    slug: 'apps-for-magicians',
+    title: 'Apps for Magicians: The Tools a Working Magician Actually Needs',
+    shortTitle: 'Apps for magicians',
+    description:
+      'Notes, spreadsheets, workspace tools or an app built for magicians? The five jobs your tools must do — repertoire, setlists, practice, bookings, invoices — and how to choose.',
+    category: 'Tools',
+    published: '2026-11-17',
+    updated: '2026-11-17',
+    readingMinutes: 6,
+    cta: {
+      title: 'The five jobs, one app',
+      text: 'Repertoire, routines, practice log, gigs, clients, quotes and invoices — linked together, on your phone and your computer. Try it free for 14 days.',
+    },
+  },
+  {
     slug: 'how-to-invoice-a-magic-show',
     title: 'How to Invoice a Magic Show: What to Include, With an Example',
     shortTitle: 'Invoicing a magic show',

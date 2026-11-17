@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router'
 import { Wordmark } from '@/components/common/logo'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/features/auth/auth-provider'
-import { GUIDES_PATH } from './guides/guides-meta'
+import { GUIDES_PATH, guidePath } from './guides/guides-meta'
+import { ORGANIZER_PATH } from './seo'
 
 // Landing sections: a plain link so it also works from the guide and legal pages
 const home = (hash: string) => `${import.meta.env.BASE_URL}#${hash}`
@@ -49,7 +50,7 @@ export function PublicFooter() {
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-start sm:justify-between sm:px-6">
         <div className="space-y-2">
           <Wordmark />
-          <p className="max-w-xs text-sm text-muted-foreground">The app for working magicians: repertoire, routines, practice, gigs, clients, props, quotes and invoices.</p>
+          <p className="max-w-xs text-sm text-muted-foreground">The magic helper app for working magicians: trick organizer, routines, practice log, gigs, clients, props, quotes and invoices.</p>
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm text-muted-foreground">
           <Link to="/signup" className="hover:text-foreground">Start free trial</Link>
@@ -58,6 +59,9 @@ export function PublicFooter() {
           <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
           <Link to={GUIDES_PATH} className="hover:text-foreground">Guides for magicians</Link>
           <Link to="/terms#legal-notice" className="hover:text-foreground">Legal notice</Link>
+          <Link to={ORGANIZER_PATH} className="hover:text-foreground">Magic trick organizer</Link>
+          <Link to={guidePath('magic-trick-list-template')} className="hover:text-foreground">Trick list template</Link>
+          <Link to={guidePath('apps-for-magicians')} className="hover:text-foreground">Apps for magicians</Link>
         </nav>
       </div>
       <p className="pb-8 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} Magician Helper. All rights reserved.</p>
